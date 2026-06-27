@@ -638,7 +638,15 @@ const SOUL_COLORS = {
 const STORAGE_KEY = "dontforget_sheet_v2";
 
 function baseAttrMax(level){ return 5 + 2*(level-1); }
-function basePoolTotal(level){ return 12 + 3*(level-1); }
+function basePoolTotal(level){
+  let base = 12 + 3*(level-1);
+
+  if(level >= 7){
+    base += 3; // bônus do nível 7
+  }
+
+  return base;
+}
 // Limite de perícia = metade do Limite de Atributo (global, por nível) — pág. 20 do rulebook.
 function skillCapForLevel(level){ return Math.floor(baseAttrMax(level)/2); }
 
@@ -926,7 +934,7 @@ function rollSkillCheck(sk, rowEl){
 /* ===================== NÍVEL ===================== */
 function renderLevel(){ $("lvlVal").textContent = state.level; }
 function setLevel(n){
-  state.level = clamp(n,1,30);
+  state.level = clamp(n,1,7);
   const max = attrMax();
   ATTRS.forEach(a=>{ if(state.attrs[a.key]>max) state.attrs[a.key]=max; });
   clampAllSkillsToCap();
@@ -941,11 +949,17 @@ function dmgDiceCount(grr){ return 1 + Math.floor(grr/2); }
 function hpMax(){
   const frm = effAttr('FRM');
   const love = state.status.love || 0;
-  const def = frm * 3 + love * 2;
+
+  const base =
+    frm * 3 +
+    love * 2;
+
+  const levelBonus = (state.level - 1) * 20; // 👈 AQUI está o +20 por nível
 
   return Math.max(
     1,
-    def +
+    base +
+    levelBonus +
     num(state.status.hpClassBonus) +
     num(state.status.hpManualBonus)
   );
