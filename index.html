@@ -53,7 +53,13 @@
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
-  background:#000;
+  background:
+    linear-gradient(
+      to bottom,
+      #000000 0%,
+      #000000 45%,
+      var(--accent) 100%
+    );
   color:var(--ink);
   font-family:var(--font-body);
   font-size:16px;
@@ -94,16 +100,59 @@ button.ui-btn{
   cursor:pointer;
   border-radius:4px;
 }
-button.ui-btn:hover{background:var(--accent);color:#fff;}
+button.ui-btn:hover{background:var(--accent);color:#fff; justify-content:center;}
 button.ui-btn.danger:hover{background:var(--red);}
 
-.pager{display:flex; gap:6px; margin-bottom:14px;}
+.pager{display:flex; gap:60px; margin-bottom:14px;}
 .pager button{
   width:32px;height:32px;border-radius:50%;
   border:2px solid var(--line); background:var(--panel-2);
   color:var(--ink-dim); font-family:var(--font-body); cursor:pointer;
 }
 .pager button.active{background:var(--accent); color:#fff; border-color:#fff;}
+
+.pager button.pager-icon{
+  width:88px;
+  height:88px;
+  border-radius:10px;
+  border:2px solid var(--line);
+  background:var(--panel-2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px;
+  cursor:pointer;
+}
+
+.pager button.pager-icon img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+
+  /* deixa o PNG “tintável” */
+  filter: brightness(0) invert(1);
+  transition: 0.2s ease;
+}
+
+/* estado ativo = cor da alma */
+.pager button.active{
+  background: var(--accent);
+  border-color: #fff;
+}
+
+.pager button.active img{
+  filter: brightness(0) invert(1);
+}
+
+/* quando NÃO ativo, fica cinza */
+.pager button:not(.active) img{
+  opacity: 0.6;
+}
+
+.pager button.pager-icon:hover{
+  transform: scale(1.08);
+  transition: 0.15s ease;
+}
 
 /* ---------- a ficha (a parte que imprime) — formato HORIZONTAL ---------- */
 .sheet-wrap{width:100%; max-width:1100px;}
@@ -553,8 +602,6 @@ footer.credit{font-size:11px; color:var(--ink-dim); text-align:center; margin-to
 
 </div>
 
-<footer class="credit no-print">Don't Forget RPG — ficha não-oficial · dados salvos automaticamente no seu navegador</footer>
-
 <script>
 (function(){
 "use strict";
@@ -672,13 +719,30 @@ function goToPage(n){
 }
 function buildPager(){
   const pager = $("pager");
-  pager.innerHTML="";
-  for(let i=1;i<=4;i++){
-    const b=document.createElement("button");
-    b.textContent=i; b.dataset.p=i;
-    b.addEventListener("click",()=>goToPage(i));
-    pager.appendChild(b);
-  }
+  pager.innerHTML = "";
+
+  const icons = [
+    { page: 1, src: "assets/Personagem.png" },
+    { page: 2, src: "assets/Itens.png" },
+    { page: 3, src: "assets/habilidades.png" },
+    { page: 4, src: "assets/anotações.png" },
+  ];
+
+  icons.forEach(icon => {
+    const btn = document.createElement("button");
+    btn.className = "pager-icon";
+    btn.dataset.p = icon.page;
+
+    const img = document.createElement("img");
+    img.src = icon.src;
+    img.alt = "page icon";
+
+    btn.appendChild(img);
+
+    btn.addEventListener("click", () => goToPage(icon.page));
+
+    pager.appendChild(btn);
+  });
 }
 
 /* ===================== FOTO (compartilhada, mesmo tamanho nas 3 páginas) ===================== */
