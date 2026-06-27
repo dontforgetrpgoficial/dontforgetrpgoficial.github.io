@@ -3,1270 +3,1261 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ficha — Don't Forget RPG</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bungee&family=VT323&display=swap" rel="stylesheet">
+<title>Don't Forget — Ficha de Personagem</title>
 <style>
-/* ============ TIPOGRAFIA ============
-   'Monster Friend' e 'Pixel Operator 8-bit' são as fontes oficiais do projeto.
-   Se você tiver os arquivos das fontes, coloque-os em uma pasta "fonts" ao lado
-   deste HTML com os nomes abaixo para a ficha usar a tipografia original.
-   Sem os arquivos, a ficha usa Bungee/VT323 (Google Fonts) como substitutas
-   de estética próxima (pixel/bold), então tudo funciona igual sem precisar de nada. */
-@font-face{
-  font-family:'Monster Friend';
-  src:url('./fonts/MonsterFriendBack.otf') format('opentype'),
-      url('./fonts/MonsterFriend.ttf') format('truetype');
-  font-weight:normal; font-style:normal; font-display:swap;
-}
-@font-face{
-  font-family:'Pixel Operator 8-bit';
-  src:url('./fonts/PixelOperator8.ttf') format('truetype'),
-      url('./fonts/PixelOperator8-Bold.ttf') format('truetype');
-  font-weight:normal; font-style:normal; font-display:swap;
-}
+/* ============================================================
+   DON'T FORGET — Ficha Interativa v3
+   Visual: ficha.html | Mecânicas: index.html (melhorado)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
+@font-face{ font-family:'MonsterFriend'; src:local('Monster Friend Back'),local('Monster Friend'); }
+@font-face{ font-family:'PixelOp'; src:local('Pixel Operator 8'),local('PixelOperator8'); }
 
 :root{
-  --bg-void:#000000;
-  --panel:#0e0e14;
-  --panel-2:#1b1626;
-  --ink:#f1ecff;
-  --ink-dim:#a89cc9;
-  --line:#ffffff;
-
-  --red:#cd0b22;
-  --orange:#fd7b1e;
-  --yellow:#ffb422;
-  --purple:#a348a3;
-  --green:#23b04b;
-  --blue:#236bf2;
-  --white-soul:#ffffff;
-  --darkner:#1a0f29;
-
-  --accent:#a348a3;       /* trocado pela escolha de Alma */
-  --accent-soft:#a348a333;
-
-  --font-display:'Monster Friend','Bungee',cursive;
-  --font-body:'Pixel Operator 8-bit','VT323',monospace;
+  --red:#cd0b22; --orange:#fd7b1e; --yellow:#ffb422;
+  --purple:#a348a3; --green:#23b04b; --blue:#236bf2; --cyan:#4fd6ff;
+  --bg:#06070f; --bg2:#0a0c1c; --panel:#0c0d18; --panel2:#10101f;
+  --border:#cdd0ef; --border-dim:#3c3f63; --text:#eef0ff; --text-dim:#9296c0;
+  --soul:#ffffff; --soul-glow:rgba(255,255,255,.2);
+  --font-d:'MonsterFriend','Press Start 2P','VT323',cursive;
+  --font-b:'PixelOp','VT323','Press Start 2P',monospace;
 }
 
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
-body{
-  background:
-    linear-gradient(
-      to bottom,
-      #000000 0%,
-      #000000 45%,
-      var(--accent) 100%
-    );
-  color:var(--ink);
-  font-family:var(--font-body);
-  font-size:16px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  min-height:100vh;
-  padding:20px 12px 60px;
+*{box-sizing:border-box; print-color-adjust:exact; -webkit-print-color-adjust:exact; color-adjust:exact;}
+
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:15px;-webkit-font-smoothing:none;}
+
+
+
+/* ---- gradient bg from index.html ---- */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(to bottom,#000000 0%,#000000 40%,var(--soul) 100%);
+  opacity:.42;
+  print-color-adjust:exact;-webkit-print-color-adjust:exact;
 }
 
-/* ---------- topo / controles (não imprime) ---------- */
+/* ---- Toolbar ---- */
 .toolbar{
-  width:100%;
-  max-width:1100px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:14px;
+  position:sticky;top:0;z-index:50;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  padding:9px 14px;
+  background:#05060c;
+  border-bottom:2px solid var(--border-dim);
 }
-.toolbar h1{
-  font-family:var(--font-display);
-  font-size:22px;
-  color:var(--accent);
-  margin:0;
-  letter-spacing:1px;
-  text-shadow:2px 2px 0 #000;
+.app-title{
+  font-family:var(--font-d);font-size:19px;color:#fff;margin-right:auto;
+  display:flex;align-items:center;gap:8px;
 }
-.toolbar .btns{display:flex;gap:8px;flex-wrap:wrap;}
-button.ui-btn{
-  font-family:var(--font-body);
-  background:var(--panel-2);
-  color:var(--ink);
-  border:2px solid var(--line);
-  padding:7px 13px;
-  font-size:14px;
-  cursor:pointer;
-  border-radius:4px;
+.spark{color:var(--soul);text-shadow:0 0 8px var(--soul-glow);}
+.btn{
+  font-family:var(--font-b);background:#15172b;color:var(--text);
+  border:2px solid var(--border-dim);padding:6px 11px;cursor:pointer;font-size:13px;
+  transition:border-color .15s,color .15s;
 }
-button.ui-btn:hover{background:var(--accent);color:#fff; justify-content:center;}
-button.ui-btn.danger:hover{background:var(--red);}
+.btn:hover{border-color:var(--soul);color:#fff;}
+.btn.primary{border-color:var(--green);color:var(--green);}
+.btn.primary:hover{background:var(--green);color:#06070f;}
+.btn.danger{border-color:var(--red);color:var(--red);}
+.btn.danger:hover{background:var(--red);color:#fff;}
+.btn.active{background:var(--soul);color:#06070f;border-color:var(--soul);}
+.storage-note{font-size:11px;color:var(--text-dim);width:100%;}
 
-.pager{display:flex; gap:60px; margin-bottom:14px;}
-.pager button{
-  width:32px;height:32px;border-radius:50%;
-  border:2px solid var(--line); background:var(--panel-2);
-  color:var(--ink-dim); font-family:var(--font-body); cursor:pointer;
-}
-.pager button.active{background:var(--accent); color:#fff; border-color:#fff;}
-
-.pager button.pager-icon{
-  width:88px;
-  height:88px;
-  border-radius:10px;
-  border:2px solid var(--line);
-  background:var(--panel-2);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px;
-  cursor:pointer;
+/* ---- Pager (icon buttons style index.html) ---- */
+.pager{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    padding:12px 0 6px;
+    position:relative;
+    z-index:2;
 }
 
-.pager button.pager-icon img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-
-  /* deixa o PNG “tintável” */
-  filter: brightness(0) invert(1);
-  transition: 0.2s ease;
+.pager-btn{
+    width:64px;
+    height:64px;
+    padding:0;
+    border:none;
+    background:none;
+    cursor:pointer;
+    transition:transform .15s;
 }
 
-/* estado ativo = cor da alma */
-.pager button.active{
-  background: var(--accent);
-  border-color: #fff;
+.pager-btn:hover{
+    transform:scale(1.08);
 }
 
-.pager button.active img{
-  filter: brightness(0) invert(1);
+.pager-btn img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    transition:
+        transform .15s,
+        filter .15s,
+        opacity .15s;
 }
 
-/* quando NÃO ativo, fica cinza */
-.pager button:not(.active) img{
-  opacity: 0.6;
+.pager-btn:not(.active) img{
+    opacity:.45;
+    filter:grayscale(100%);
 }
 
-.pager button.pager-icon:hover{
-  transform: scale(1.08);
-  transition: 0.15s ease;
+.pager-btn.active img{
+    opacity:1;
+    filter:none;
+    transform:scale(1.08);
 }
+/* ---- Sheet wrap ---- */
+.sheet-wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto 60px;padding:0 14px;}
 
-/* ---------- a ficha (a parte que imprime) — formato HORIZONTAL ---------- */
-.sheet-wrap{width:100%; max-width:1100px;}
-.page{
-  width:100%;
-  aspect-ratio:1.42/1;
-  min-height:680px;
-  background:var(--bg-void);
-  border:5px solid var(--line);
-  border-radius:6px;
-  position:relative;
-  padding:16px 20px;
-  print-color-adjust:exact;-webkit-print-color-adjust:exact;
-  box-shadow: 0 0 0 2px #000 inset, 0 10px 30px #00000088;
-  overflow:hidden;
-  display:none;
-}
-.page.active{display:flex; flex-direction:column;}
-.page::before, .page::after{
-  content:"";
-  position:absolute; width:16px; height:16px;
-  border:3px solid var(--accent);
+/* ---- Page ---- */
+.page{display:none;width:100%;background:var(--panel);border:3px solid var(--border);
+  box-shadow:0 0 0 1px rgba(0,0,0,.6),0 18px 40px rgba(0,0,0,.55);padding:18px;position:relative;
+  print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+.page.active{display:block;}
+.page::before,.page::after{
+  content:'';position:absolute;width:18px;height:18px;border:3px solid var(--soul);
   print-color-adjust:exact;-webkit-print-color-adjust:exact;
 }
-.page::before{top:-9px;left:-9px;border-right:none;border-bottom:none;}
-.page::after{bottom:-9px;right:-9px;border-left:none;border-top:none;}
+.page::before{top:-8px;left:-8px;border-right:none;border-bottom:none;}
+.page::after{bottom:-8px;right:-8px;border-left:none;border-top:none;}
 
 .sheet-title{
-  font-family:var(--font-display);
-  color:var(--accent);
-  text-align:left;
-  font-size:20px;
-  letter-spacing:2px;
-  margin:0 0 10px;
-  padding-bottom:6px;
-  border-bottom:3px solid var(--accent);
+  font-family:var(--font-d);color:var(--soul);font-size:18px;letter-spacing:2px;
+  margin:0 0 12px;padding-bottom:6px;border-bottom:3px solid var(--soul);
   text-shadow:2px 2px 0 #000;
-  flex:0 0 auto;
 }
 
-.page-body{flex:1; display:flex; gap:14px; min-height:0;}
-.col{display:flex; flex-direction:column; gap:10px; min-height:0;}
-.col.scroll{overflow:auto; padding-right:4px;}
+/* ---- Layouts ---- */
+.page-body{display:flex;gap:14px;min-height:0;}
+.col{display:flex;flex-direction:column;gap:10px;}
 
-.section{
-  border:2px solid var(--line);
-  border-radius:5px;
-  background:#ffffff08;
-  padding:8px 10px 10px;
-  print-color-adjust:exact;-webkit-print-color-adjust:exact;
+.panel-box{
+  border:2px solid var(--border-dim);background:var(--panel2);
+  padding:16px 14px 14px;position:relative;margin-top:14px;
 }
-.section h2{
-  font-family:var(--font-display);
-  font-size:13px;
-  color:var(--accent);
-  margin:0 0 8px;
-  letter-spacing:1px;
-  border-bottom:1px dashed var(--ink-dim);
-  padding-bottom:5px;
+.panel-box:first-child{margin-top:0;}
+.panel-title{
+  position:absolute;top:-13px;left:10px;background:var(--panel);
+  border:2px solid var(--border);padding:2px 10px;font-size:13px;color:#fff;
+  display:flex;align-items:center;gap:6px;font-family:var(--font-d);letter-spacing:.5px;
 }
+.panel-title .ic{color:var(--soul);}
 
-label.field-label{display:block; font-size:11px; color:var(--ink-dim); margin-bottom:2px;}
-
-input[type=text], input[type=number], textarea, select{
-  width:100%;
-  background:transparent;
-  border:1px solid #ffffff55;
-  color:var(--ink);
-  font-family:var(--font-body);
-  font-size:14px;
-  padding:4px 6px;
-  border-radius:3px;
-  print-color-adjust:exact;-webkit-print-color-adjust:exact;
+/* ---- Portrait ---- */
+.portrait-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.portrait{
+  width:160px;height:160px;border-radius:50%;border:3px solid var(--border);
+  background:radial-gradient(circle at 50% 50%,var(--soul-glow),transparent 70%),#050610;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  cursor:pointer;position:relative;
 }
-input[type=color]{padding:1px; height:28px; cursor:pointer;}
-input:focus, textarea:focus, select:focus{outline:2px solid var(--accent); border-color:var(--accent);}
-textarea{resize:vertical;}
-select{cursor:pointer;}
-select option{background:#1a1230; color:#fff;}
-.bonus-input{width:42px !important; flex:0 0 42px; text-align:center; font-size:12px; padding:3px 2px;}
+.portrait img{width:100%;height:100%;object-fit:cover;}
+.soul-spark{width:55%;height:55%;fill:var(--soul);filter:drop-shadow(0 0 10px var(--soul-glow));}
+.hint{font-size:10px;color:var(--text-dim);text-align:center;padding:4px;}
 
-/* ---- header / personagem ---- */
-.char-head{display:flex; gap:12px; align-items:flex-start;}
-.photo-frame{
-  width:150px; height:150px; flex:0 0 150px;
-  border:3px solid var(--line); border-radius:6px;
-  background:repeating-conic-gradient(#ffffff10 0 25%, transparent 0 50%) 0/16px 16px, #100a1c;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; overflow:hidden; position:relative;
-  print-color-adjust:exact;-webkit-print-color-adjust:exact;
+/* ---- Fields ---- */
+label.f{display:block;font-size:11px;color:var(--text-dim);margin-bottom:2px;text-transform:uppercase;}
+input[type=text],input[type=number],textarea,select{
+  background:transparent;border:1px solid var(--border-dim);color:var(--text);
+  font-family:var(--font-b);font-size:13px;padding:4px 6px;width:100%;
 }
-.photo-frame img{width:100%; height:100%; object-fit:cover; display:block;}
-.photo-frame .hint{font-size:10px; color:var(--ink-dim); text-align:center; padding:6px;}
+input[type=number]{width:52px;}
+input:focus,textarea:focus,select:focus{outline:1px solid var(--soul);}
+textarea{resize:vertical;min-height:56px;}
+.row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:7px;}
+.row>div{flex:1;min-width:80px;}
+.tiny{width:48px!important;}
+select option{background:#1a1230;color:#fff;}
 
-.char-info{flex:1; display:flex; flex-direction:column; gap:7px; justify-content:center;}
-.level-box{display:flex; align-items:center; gap:8px;}
-.stepper{display:flex; align-items:center; gap:6px;}
+/* ---- Level stepper ---- */
+.stepper{display:flex;align-items:center;gap:6px;}
 .stepper button{
-  width:24px;height:24px; border-radius:4px; border:2px solid var(--line);
-  background:var(--panel-2); color:var(--ink); font-family:var(--font-body); cursor:pointer;
+  width:24px;height:24px;border-radius:4px;border:2px solid var(--border-dim);
+  background:var(--panel2);color:var(--text);font-family:var(--font-b);cursor:pointer;
 }
-.stepper button:hover{background:var(--accent); color:#fff;}
-.level-val{font-family:var(--font-display); font-size:17px; min-width:24px; text-align:center; color:var(--accent);}
+.stepper button:hover{background:var(--soul);color:#06070f;}
+.level-val{font-family:var(--font-d);font-size:17px;min-width:24px;text-align:center;color:var(--soul);}
+.points-note{font-size:11px;color:var(--text-dim);margin-top:4px;}
+.points-note .hi{color:var(--yellow);font-weight:bold;}
+.points-note.over .hi{color:var(--red);}
 
-.points-note{font-size:11px; color:var(--ink-dim);}
-.points-note span{color:var(--yellow); font-weight:bold;}
-.points-note.over span{color:var(--red);}
-
-/* ---- atributos ---- */
-.attr-row{display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:nowrap;}
+/* ---- Attributes ---- */
+.attr-row{
+  display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:nowrap;
+}
 .attr-tag{
-  width:38px; flex:0 0 38px; font-family:var(--font-display); font-size:11px; text-align:center;
-  color:#000; border-radius:4px; padding:3px 0;
+  width:36px;flex:0 0 36px;font-family:var(--font-d);font-size:11px;text-align:center;
+  color:#000;border-radius:4px;padding:3px 0;font-weight:bold;
 }
-.attr-row .attr-name{flex:0 0 64px; font-size:11px; color:var(--ink-dim);}
-.pips{display:flex; gap:2px; flex-wrap:wrap; flex:1;}
+.attr-name-lbl{flex:0 0 60px;font-size:11px;color:var(--text-dim);}
+.pips{display:flex;gap:2px;flex-wrap:wrap;flex:1;}
 .pip{
-  width:14px; height:14px; border:2px solid var(--line); border-radius:3px;
-  background:transparent; cursor:pointer;
+  width:13px;height:13px;border:2px solid var(--border-dim);border-radius:3px;
+  background:transparent;cursor:pointer;
   print-color-adjust:exact;-webkit-print-color-adjust:exact;
 }
-.pip.filled{background:var(--accent);}
-.pip.skill{width:11px;height:11px;}
-.pip.locked{opacity:.25; cursor:not-allowed;}
-.attr-row .val{min-width:16px; text-align:center; font-size:11px;}
-.bonus-tag{font-size:9px; color:var(--ink-dim);}
+.pip.filled{background:var(--soul);}
+.pip.locked{opacity:.25;cursor:not-allowed;}
+.attr-val{min-width:36px;font-size:11px;text-align:center;color:var(--text);}
+.attr-bonus-inp{width:36px!important;font-size:11px;padding:2px 3px!important;text-align:center;}
+.attr-roll-btn{
+  width:24px;height:24px;border:1px solid var(--border-dim);background:transparent;
+  color:var(--text);cursor:pointer;font-size:13px;font-family:var(--font-b);
+}
+.attr-roll-btn:hover{border-color:var(--soul);color:#fff;}
+.attr-roll-result{font-size:10px;color:var(--yellow);min-height:12px;font-family:var(--font-b);}
 
-/* ---- perícias ---- */
-.skill-cols{display:grid; grid-template-columns:1fr 1fr; gap:0 14px;}
-.skill-group{margin-bottom:6px;}
+/* ---- Skills ---- */
+.pericias-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;}
+.skill-group{margin-bottom:8px;}
 .skill-group .group-head{
-  display:flex; justify-content:space-between; font-size:10px; color:var(--ink-dim);
-  border-bottom:1px dotted #ffffff33; margin-bottom:3px; padding-bottom:2px;
+  display:flex;justify-content:space-between;font-size:11px;
+  border-bottom:1px solid;margin-bottom:4px;padding-bottom:2px;
 }
-.skill-row{display:flex; align-items:center; gap:5px; margin-bottom:3px; flex-wrap:wrap;}
-.skill-row .skill-name{
-  flex:0 0 72px; font-size:11px; cursor:pointer; text-decoration:underline dotted var(--ink-dim);
+.skill-row{display:flex;align-items:center;gap:5px;margin-bottom:3px;flex-wrap:wrap;}
+.skill-name{flex:0 0 80px;font-size:11px;cursor:pointer;text-decoration:underline dotted var(--text-dim);}
+.skill-name:hover{color:var(--soul);}
+.skill-pips-wrap{display:flex;gap:2px;flex:1;}
+.skill-pip{width:11px;height:11px;border:2px solid var(--border-dim);border-radius:2px;background:transparent;cursor:pointer;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+.skill-pip.filled{background:var(--soul);}
+.skill-pip.locked{opacity:.25;cursor:not-allowed;}
+.skill-val{font-size:11px;min-width:14px;text-align:center;}
+.skill-bonus-inp{width:34px!important;font-size:11px;padding:2px!important;text-align:center;}
+.skill-roll-result{font-size:10px;color:var(--yellow);min-height:12px;flex-basis:100%;padding-left:85px;}
+
+/* ---- Stat boxes (ATK DEF MAG together) ---- */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
+.stat-box{border:2px solid var(--border-dim);border-radius:4px;text-align:center;padding:6px 4px;background:#0a0a16;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+.stat-box .stat-label{font-size:10px;color:var(--text-dim);}
+.stat-box .stat-val{font-family:var(--font-d);font-size:20px;color:var(--soul);}
+.stat-box .stat-bonus{display:flex;align-items:center;gap:3px;justify-content:center;margin-top:3px;}
+.stat-box .stat-bonus input{width:38px!important;font-size:11px;padding:2px;}
+.stat-box .stat-bonus label{font-size:9px;color:var(--text-dim);}
+
+/* ---- HP / HOPE / LOVE progress bars ---- */
+.meter-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.meter-label{flex:0 0 50px;font-size:12px;font-family:var(--font-d);color:var(--text);}
+.meter-bar-wrap{flex:1;position:relative;height:18px;background:#0a0a16;border:1px solid var(--border-dim);border-radius:2px;overflow:hidden;cursor:pointer;min-width:60px;}
+.meter-bar{height:100%;transition:width .15s;position:absolute;left:0;top:0;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+.meter-bar.hp{background:var(--red);}
+.meter-bar.hope{background:var(--yellow);}
+.meter-bar.love{background:var(--purple);}
+.meter-bar-label{position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:10px;color:#fff;text-shadow:1px 1px 0 #000;pointer-events:none;white-space:nowrap;}
+.meter-max-note{font-size:10px;color:var(--text-dim);flex:0 0 auto;}
+
+.hp-bonus-row{display:flex;gap:6px;margin-top:4px;margin-bottom:8px;}
+.hp-bonus-row>div{flex:1;}
+.hp-bonus-row label{font-size:10px;color:var(--text-dim);display:block;margin-bottom:2px;}
+
+/* ---- Karma bar ---- */
+.karma-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.karma-track{flex:1;height:16px;background:#0a0a16;border:1px solid var(--border-dim);border-radius:2px;overflow:hidden;cursor:pointer;position:relative;}
+.karma-center{position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--border-dim);z-index:1;}
+.karma-fill{height:100%;position:absolute;top:0;transition:width .15s;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+.karma-label-inside{position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:10px;color:#fff;text-shadow:1px 1px 0 #000;pointer-events:none;z-index:2;}
+.karma-val{font-family:var(--font-d);min-width:38px;text-align:center;color:var(--soul);font-size:13px;}
+.karma-stepper button{width:22px;height:22px;border:1px solid var(--border-dim);background:#0a0a16;color:var(--text);cursor:pointer;font-family:var(--font-b);font-size:13px;}
+.karma-stepper button:hover{border-color:var(--soul);}
+
+/* ---- Dice box ---- */
+.dice-box{border:2px solid var(--border-dim);background:#0a0a16;padding:12px;margin-top:10px;}
+.dice-controls{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+.dice-result{margin-top:8px;min-height:48px;font-size:13px;padding:8px;border:1px dashed var(--border-dim);background:#070713;}
+.dice-result .total{font-size:22px;color:var(--soul);font-weight:bold;}
+.dice-log{font-size:11px;color:var(--text-dim);margin-top:6px;max-height:64px;overflow:auto;}
+
+/* ---- Items ---- */
+#itemsList{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:3px 8px;
+    width:100%;
 }
-.skill-row .skill-name:hover{color:var(--accent);}
-.roll-result{font-size:10px; color:var(--yellow); min-height:12px; flex-basis:100%;}
 
-/* ---- status / dados ---- */
-.stat-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:8px;}
-.stat-box{
-  border:2px solid var(--line); border-radius:5px; text-align:center; padding:5px 2px;
-  print-color-adjust:exact;-webkit-print-color-adjust:exact;
-}
-.stat-box .stat-label{font-size:9px; color:var(--ink-dim);}
-.stat-box .stat-val{font-family:var(--font-display); font-size:18px; color:var(--accent);}
-.stat-box .stat-bonus{display:flex; align-items:center; gap:3px; justify-content:center; margin-top:3px;}
-.stat-box .stat-bonus input{width:36px !important; font-size:10px; padding:2px;}
-.stat-box .stat-bonus label{font-size:9px; color:var(--ink-dim);}
-
-.hp-bonus-row{display:flex; gap:6px; margin-top:4px;}
-.hp-bonus-row > div{flex:1;}
-.hp-bonus-row label{font-size:10px; color:var(--ink-dim); display:block; margin-bottom:2px;}
-
-.meter-row{display:flex; align-items:center; gap:8px; margin-bottom:7px;}
-.meter-row .m-label{flex:0 0 48px; font-size:12px; font-family:var(--font-display); color:var(--ink);}
-.meter-track{display:flex; gap:2px; flex-wrap:wrap; flex:1;}
-.meter-pip{width:12px;height:16px; border:2px solid var(--line); cursor:pointer; border-radius:2px;
-  print-color-adjust:exact;-webkit-print-color-adjust:exact;}
-.meter-pip.on.hp{background:var(--red);}
-.meter-pip.on.hope{background:var(--yellow);}
-.meter-pip.on.love{background:var(--purple);}
-.meter-max-label{font-size:10px; color:var(--ink-dim); flex:0 0 auto;}
-
-.karma-row{display:flex; align-items:center; gap:8px;}
-.karma-track{flex:1; display:flex; align-items:center; gap:2px;}
-.karma-seg{flex:1; height:13px; border:1px solid #ffffff55;}
-.karma-val{font-family:var(--font-display); min-width:30px; text-align:center; color:var(--accent);}
-
-.dice-area{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;}
-.dice-btn{flex:1; min-width:120px; font-size:12px !important; padding:6px 8px !important;}
-.dice-out{
-  margin-top:4px; font-size:12px; background:#00000055; border:1px dashed var(--ink-dim);
-  border-radius:4px; padding:5px 7px; min-height:16px;
+.item-card{
+    border:1px solid var(--border-dim);
+    background:#0a0a16;
+    padding:2px 4px;
+    border-radius:2px;
 }
 
-/* ---- itens ---- */
-.items-grid{display:grid; grid-template-columns:1fr; gap:5px;}
-.item-slot{display:flex; align-items:center; gap:5px;}
-.item-slot .idx{font-size:10px; width:14px; color:var(--ink-dim); text-align:right;}
-
-/* ---- equipados ---- */
-.equip-box{border:1px dashed var(--ink-dim); border-radius:4px; padding:6px; margin-bottom:6px;}
-.equip-box .eq-title{font-size:11px; color:var(--accent); margin-bottom:3px; font-family:var(--font-display); letter-spacing:1px;}
-.equip-box textarea{min-height:36px;}
-
-/* ---- habilidades ---- */
-.ability{border:1px dashed var(--ink-dim); border-radius:4px; padding:7px; margin-bottom:7px; position:relative;}
-.ability .remove-ab{
-  position:absolute; top:3px; right:5px; background:none; border:none; color:var(--red);
-  cursor:pointer; font-size:13px; font-family:var(--font-body);
+.item-title{
+    display:flex;
+    align-items:center;
+    gap:3px;
+    margin-bottom:2px;
+    font-size:8px;
+    color:var(--text-dim);
+    font-family:var(--font-d);
 }
-.add-row{text-align:center; margin-top:4px;}
 
-/* ---- anotações ---- */
-.notes-col textarea{min-height:100%; height:100%;}
-
-/* ---- soul select swatch ---- */
-.soul-row{display:flex; gap:8px; align-items:center;}
-.soul-swatch{width:18px; height:18px; border-radius:50%; border:2px solid var(--line); flex:0 0 18px;
-  print-color-adjust:exact;-webkit-print-color-adjust:exact;}
-#customAlmaBox{display:none; margin-top:6px; align-items:center; gap:8px;}
-
-.field-pair{display:flex; gap:8px; margin-bottom:6px;}
-.field-pair > div{flex:1;}
-
-footer.credit{font-size:11px; color:var(--ink-dim); text-align:center; margin-top:10px;}
-
-@media print{
-  body{background:#fff; padding:0;}
-  .toolbar, .pager, footer.credit{display:none !important;}
-  .sheet-wrap{max-width:100%;}
-  .page{display:flex !important; flex-direction:column; page-break-after:always; box-shadow:none; margin:0 auto; aspect-ratio:auto; min-height:0;}
-  .page:last-child{page-break-after:auto;}
-  @page{size:landscape; margin:8mm;}
+.item-title span{
+    min-width:12px;
+    color:var(--soul);
 }
-@media (max-width:760px){
-  .page{aspect-ratio:auto;}
+
+.item-card input{
+    font-size:9px;
+    height:18px;
+    padding:1px 3px;
+    margin:0;
+}
+
+.item-card textarea{
+    font-size:8px;
+    line-height:1.1;
+    height:18px;
+    min-height:18px;
+    padding:2px 3px;
+    resize:none;
+}
+
+/* ---- Equip ---- */
+.equip-box{border:1px dashed var(--border-dim);border-radius:4px;padding:7px;margin-bottom:7px;}
+.equip-box .eq-title{font-size:11px;color:var(--soul);margin-bottom:3px;font-family:var(--font-d);letter-spacing:1px;}
+.equip-box textarea{min-height:102px;}
+
+
+/* ---- Abilities ---- */
+.hab-card{border:1px solid var(--border-dim);padding:10px;margin-bottom:9px;background:#0a0a16;position:relative;}
+.hab-card .remove{position:absolute;top:4px;right:4px;background:transparent;border:1px solid var(--red);color:var(--red);width:20px;height:20px;cursor:pointer;font-size:11px;line-height:1;}
+.hab-grid{display:grid;grid-template-columns:1.4fr .8fr .8fr;gap:8px;margin-bottom:6px;}
+
+/* ---- Soul selector ---- */
+.soul-row{display:flex;gap:8px;align-items:center;}
+.soul-swatch{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex:0 0 18px;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+#customAlmaBox{display:none;margin-top:6px;align-items:center;gap:8px;}
+select option{background:#1a1230;color:#fff;}
+
+/* ---- Notes ---- */
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px;}
+.notes-grid textarea{height:500px;}
+
+/* ---- Misc ---- */
+.subtle{color:var(--text-dim);font-size:11px;}
+.add-row{margin-top:6px;}
+.field-pair{display:flex;gap:8px;margin-bottom:6px;}
+.field-pair>div{flex:1;}
+
+/* ---- Responsive ---- */
+@media(max-width:900px){
   .page-body{flex-direction:column;}
-  .skill-cols{grid-template-columns:1fr;}
-  .char-head{flex-direction:column; align-items:center; text-align:center;}
+  .pericias-cols{grid-template-columns:1fr;}
+  .notes-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .items-list{grid-template-columns:1fr;}
+  .pager-btn{width:60px;height:60px;}
+  .pager-btn .icon{font-size:20px;}
+}
+
+/* ---- PRINT ---- */
+@media print{
+  body{background:var(--bg)!important;}
+  body::before{display:block!important;}
+  .star-bg{display:block!important;}
+  .no-print{display:none!important;}
+  .toolbar{display:none!important;}
+  .pager{display:none!important;}
+  .sheet-wrap{margin:0;padding:0;max-width:none;}
+  .page{display:block!important;page-break-after:always;margin-bottom:0;box-shadow:none;}
+  .page:last-child{page-break-after:auto;}
+  input,textarea,select{border-color:#555!important;}
+  @page{size:landscape;margin:8mm;background:#06070f;}
 }
 </style>
 </head>
 <body>
 
+<div class="star-bg"></div>
+
+<!-- TOOLBAR -->
 <div class="toolbar no-print">
-  <h1>DON'T FORGET — Ficha</h1>
-  <div class="btns">
-    <button class="ui-btn" id="btnPdf">🖨️ Exportar PDF</button>
-    <button class="ui-btn" id="btnExport">💾 Exportar</button>
-    <button class="ui-btn" id="btnImport">📂 Importar</button>
-    <input type="file" id="importFile" accept=".json" style="display:none;">
-    <button class="ui-btn danger" id="btnReset">♻️ Resetar ficha</button>
-  </div>
+  <div class="app-title"><span class="spark">✦</span> DON'T FORGET <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-b);">— ficha interativa</span></div>
+  <button class="btn primary" id="btnPrint">⤓ Exportar PDF</button>
+  <button class="btn" id="btnExport">💾 Exportar JSON</button>
+  <button class="btn" id="btnImport">📂 Importar JSON</button>
+  <input type="file" id="importFile" accept=".json" style="display:none;">
+  <button class="btn danger" id="btnReset">Limpar Ficha</button>
+  <div class="storage-note" id="storageNote"></div>
 </div>
 
-<div class="pager no-print" id="pager"></div>
+<!-- PAGER -->
+<div class="pager no-print" id="pager">
+  <button class="pager-btn active" data-page="1">
+    <img src="Personagem.png" alt="Personagem">
+  </button>
 
+  <button class="pager-btn" data-page="2">
+    <img src="Itens.png" alt="Itens">
+  </button>
+
+  <button class="pager-btn" data-page="3">
+    <img src="habilidades.png" alt="Habilidades">
+  </button>
+
+  <button class="pager-btn" data-page="4">
+    <img src="anotações.png" alt="Anotações">
+  </button>
+</div>
 <div class="sheet-wrap">
 
-  <!-- PÁGINA 1 -->
-  <section class="page" id="page-1">
-    <div class="sheet-title">PERSONAGEM</div>
-    <div class="page-body">
-      <div class="col" style="flex:0 0 230px;">
-        <div class="section" style="flex:0 0 auto;">
-          <div class="char-head" style="flex-direction:column; align-items:center;">
-            <div class="photo-frame" id="photoFrame1">
-              <span class="hint">clique para<br>adicionar foto</span>
-            </div>
-            <div class="char-info" style="width:100%;">
-              <div><label class="field-label">Nome</label><input type="text" id="charName" placeholder="Nome do personagem"></div>
-              <div><label class="field-label">Título</label><input type="text" id="charTitle" placeholder="ex: O Guardião Esquecido"></div>
-              <div class="level-box">
-                <label class="field-label" style="margin:0;">Nível</label>
-                <div class="stepper">
-                  <button id="lvlMinus">−</button>
-                  <span class="level-val" id="lvlVal">1</span>
-                  <button id="lvlPlus">+</button>
-                </div>
-              </div>
+<!-- =================== PAGE 1: PERSONAGEM =================== -->
+<section class="page active" id="page1">
+  <div class="sheet-title">PERSONAGEM</div>
+  <div class="page-body">
+
+    <!-- COL 1: portrait + info básica -->
+    <div class="col" style="flex:0 0 220px;">
+      <div class="portrait-wrap">
+        <div class="portrait" id="portraitBtn1" title="Clique para enviar foto">
+          <svg class="soul-spark" viewBox="0 0 24 24" id="soulSvg1"><path d="M12 0 L14 9 L24 12 L14 15 L12 24 L10 15 L0 12 L10 9 Z"/></svg>
+          <img id="portraitImg1" style="display:none;">
+        </div>
+        <div class="hint">clique para adicionar foto</div>
+      </div>
+      <input type="file" accept="image/*" id="photoInput" style="display:none;">
+
+      <div class="panel-box">
+        <div class="panel-title"><span class="ic">★</span> PERSONAGEM</div>
+        <label class="f">Nome</label>
+        <input type="text" id="charName" placeholder="Nome" style="margin-bottom:6px;font-size:11px;">
+        <label class="f">Título</label>
+        <input type="text" id="charTitle" placeholder="Título" style="margin-bottom:8px;font-size:11px;">
+        <div class="row" style="align-items:center;">
+          <div style="flex:0;">
+            <label class="f">Nível</label>
+            <div class="stepper">
+              <button id="lvlMinus">−</button>
+              <span class="level-val" id="lvlVal">1</span>
+              <button id="lvlPlus">+</button>
             </div>
           </div>
-          <input type="file" id="photoInput" accept="image/*" style="display:none;">
+        </div>
+        <div class="points-note" id="attrPointsNote">Pontos: <span class="hi">0/12</span> · Máx/atrib: <span class="hi" id="attrMaxNote">5</span></div>
+      </div>
+    </div>
+
+    <!-- COL 2: atributos -->
+    <div class="col" style="flex:0 0 270px;">
+      <div class="panel-box" style="margin-top:0;">
+        <div class="panel-title"><span class="ic">◈</span> ATRIBUTOS</div>
+        <div id="attrList" style="margin-top:6px;"></div>
+      </div>
+    </div>
+
+    <!-- COL 3: perícias -->
+    <div class="col" style="flex:1;min-height:0;">
+      <div class="panel-box" style="margin-top:0;">
+        <div class="panel-title"><span class="ic">✎</span> PERÍCIAS <span class="subtle" style="font-size:10px;margin-left:4px;">máx/perícia: <span id="skillCapNote">2</span></span></div>
+        <div class="pericias-cols" id="skillList" style="margin-top:6px;"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =================== PAGE 2: STATUS =================== -->
+<section class="page" id="page2">
+  <div class="sheet-title">EQUIPAMENTO &amp; STATUS</div>
+  <div class="page-body">
+
+    <!-- COL 1: foto + equipados + itens -->
+    <div class="col" style="flex:0 0 220px;">
+      <div class="portrait-wrap">
+        <div class="portrait" id="portraitBtn2">
+          <svg class="soul-spark" viewBox="0 0 24 24" id="soulSvg2"><path d="M12 0 L14 9 L24 12 L14 15 L12 24 L10 15 L0 12 L10 9 Z"/></svg>
+          <img id="portraitImg2" style="display:none;">
         </div>
       </div>
 
-      <div class="col" style="flex:0 0 280px;">
-        <div class="section" style="flex:1; min-height:0; overflow:auto;">
-          <h2>ATRIBUTOS</h2>
-          <div class="points-note" id="attrPointsNote">Pontos: <span>0/0</span> · Máx/atributo: <span id="attrMax">5</span></div>
-          <div id="attrList" style="margin-top:6px;"></div>
+      <div class="panel-box">
+        <div class="panel-title"><span class="ic">♥</span> EQUIPADOS</div>
+        <div class="equip-box">
+          <div class="eq-title">ARMA</div>
+          <input type="text" id="eqArmaNome" placeholder="Nome da arma" style="margin-bottom:3px;">
+          <textarea id="eqArmaDesc" rows="2" placeholder="Descrição / efeito"></textarea>
         </div>
-      </div>
-
-      <div class="col" style="flex:1; min-height:0;">
-        <div class="section" style="flex:1; min-height:0; overflow:auto;">
-          <h2>PERÍCIAS <span style="font-size:10px;color:var(--ink-dim)">(máx./perícia: <span id="skillCapNote">2</span>)</span></h2>
-          <div class="skill-cols" id="skillList"></div>
+        <div class="equip-box">
+          <div class="eq-title">ARMADURA</div>
+          <input type="text" id="eqArmaduraNome" placeholder="Nome da armadura" style="margin-bottom:3px;">
+          <textarea id="eqArmaduraDesc" rows="2" placeholder="Descrição / efeito"></textarea>
+        </div>
+        <div class="equip-box">
+          <div class="eq-title">AMULETO</div>
+          <input type="text" id="eqAmuletoNome" placeholder="Nome do amuleto" style="margin-bottom:3px;">
+          <textarea id="eqAmuletoDesc" rows="2" placeholder="Descrição / efeito"></textarea>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- PÁGINA 2 -->
-  <section class="page" id="page-2">
-    <div class="sheet-title">EQUIPAMENTO &amp; STATUS</div>
-    <div class="page-body">
-      <div class="col" style="flex:0 0 230px;">
-        <div class="section" style="flex:0 0 auto; text-align:center;">
-          <div class="photo-frame" id="photoFrame2" style="margin:0 auto;"></div>
+    <!-- COL 2: status principal -->
+    <div class="col" style="flex:1;min-height:0;">
+      <div class="panel-box" style="margin-top:0;">
+        <div class="panel-title"><span class="ic">♦</span> STATUS</div>
+
+        <!-- ATK DEF MAG juntos -->
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-label">ATK</div>
+            <div class="stat-val" id="statAtk">0</div>
+            <div class="stat-bonus"><label>Bônus</label><input type="number" id="atkBonus" value="0"></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">DEF</div>
+            <div class="stat-val" id="statDef">0</div>
+            <div class="stat-bonus"><label>Bônus</label><input type="number" id="defBonus" value="0"></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">MAG</div>
+            <div class="stat-val" id="statMag">0</div>
+            <div class="stat-bonus"><label>Bônus</label><input type="number" id="magBonus" value="0"></div>
+          </div>
         </div>
-        <div class="section" style="flex:1; overflow:auto;">
-          <h2>EQUIPADOS</h2>
-          <div class="equip-box">
-            <div class="eq-title">ARMA</div>
-            <input type="text" id="eqArmaNome" placeholder="Nome da arma" style="margin-bottom:3px;">
-            <textarea id="eqArmaDesc" rows="2" placeholder="Descrição / efeito"></textarea>
+
+        <!-- HP barra -->
+        <div class="meter-row">
+          <span class="meter-label">HP</span>
+          <div class="meter-bar-wrap" id="hpBarWrap" title="Clique para ajustar HP">
+            <div class="meter-bar hp" id="hpBar" style="width:100%;"></div>
+            <span class="meter-bar-label" id="hpBarLabel">20 / 20</span>
           </div>
-          <div class="equip-box">
-            <div class="eq-title">ARMADURA</div>
-            <input type="text" id="eqArmaduraNome" placeholder="Nome da armadura" style="margin-bottom:3px;">
-            <textarea id="eqArmaduraDesc" rows="2" placeholder="Descrição / efeito"></textarea>
+        </div>
+        <div class="hp-bonus-row">
+          <div><label>Bônus Classe</label><input type="number" id="hpClassBonus" value="0"></div>
+          <div><label>DEF base</label><input type="text" id="hpDefBase" readonly></div>
+          <div><label>Bônus manual</label><input type="number" id="hpManualBonus" value="0"></div>
+        </div>
+
+        <!-- HOPE barra -->
+        <div class="meter-row">
+          <span class="meter-label">HOPE</span>
+          <div class="meter-bar-wrap" id="hopeBarWrap" title="Clique para ajustar HOPE">
+            <div class="meter-bar hope" id="hopeBar" style="width:100%;"></div>
+            <span class="meter-bar-label" id="hopeBarLabel">10 / 10</span>
           </div>
-          <div class="equip-box">
-            <div class="eq-title">AMULETO</div>
-            <input type="text" id="eqAmuletoNome" placeholder="Nome do amuleto" style="margin-bottom:3px;">
-            <textarea id="eqAmuletoDesc" rows="2" placeholder="Descrição / efeito"></textarea>
+          <span class="meter-max-note" id="hopeMaxNote">/10</span>
+        </div>
+
+        <!-- LOVE barra -->
+        <div class="meter-row">
+          <span class="meter-label">LOVE</span>
+          <div class="meter-bar-wrap" id="loveBarWrap" title="Clique para ajustar LOVE (máx 20)">
+            <div class="meter-bar love" id="loveBar" style="width:0%;"></div>
+            <span class="meter-bar-label" id="loveBarLabel">0 / 20</span>
           </div>
+        </div>
+
+        <!-- KARMA barra (limite 50) -->
+        <div class="karma-row">
+          <span class="meter-label">KARMA</span>
+          <div class="karma-stepper" style="display:flex;gap:4px;align-items:center;">
+            <button id="karmaMinus">−</button>
+            <span class="karma-val" id="karmaVal">0</span>
+            <button id="karmaPlus">+</button>
+          </div>
+          <div class="karma-track" id="karmaTrack">
+            <div class="karma-center"></div>
+            <div class="karma-fill" id="karmaFill" style="width:0%;left:50%;background:var(--green);"></div>
+            <span class="karma-label-inside" id="karmaLabelInside">0 / 50</span>
+          </div>
+        </div>
+
+        <!-- rolador de dados -->
+        <div class="dice-box no-print">
+          <div style="font-family:var(--font-d);font-size:13px;color:var(--soul);margin-bottom:8px;">⚄ ROLADOR DE DADOS</div>
+          <div class="dice-controls">
+            <div><label class="f">Qtd</label><input type="number" id="diceQty" class="tiny" value="1" min="1" max="20"></div>
+            <button class="btn" id="btnRollDano">🎲 Dano (ATK)</button>
+            <button class="btn" id="btnRollMag">✨ Dano (MAG)</button>
+            <div><label class="f">Mod</label><input type="number" id="diceMod" class="tiny" value="0"></div>
+          </div>
+          <div class="dice-result" id="diceResult">Resultado aparecerá aqui.</div>
+          <div class="dice-log" id="diceLog"></div>
         </div>
       </div>
 
-      <div class="col" style="flex:1 1 340px; min-height:0;">
-        <div class="section" style="flex:1; min-height:0; overflow:auto;">
-          <h2>STATUS</h2>
-          <div class="stat-grid">
-            <div class="stat-box">
-              <div class="stat-label">ATK</div><div class="stat-val" id="statAtk">0</div>
-              <div class="stat-bonus"><label>Bônus</label><input type="number" id="atkBonus" class="bonus-input" value="0"></div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">DEF</div><div class="stat-val" id="statDef">0</div>
-              <div class="stat-bonus"><label>Bônus</label><input type="number" id="defBonus" class="bonus-input" value="0"></div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">MAG</div><div class="stat-val" id="statMag">0</div>
-              <div class="stat-bonus"><label>Bônus</label><input type="number" id="magBonus" class="bonus-input" value="0"></div>
-            </div>
-          </div>
+      <div class="panel-box">
+        <div class="panel-title">
+          <span class="ic">✦</span> INVENTÁRIO
+        </div>
 
-          <div class="meter-row">
-            <span class="m-label">HP</span>
-            <div class="meter-track" id="hpTrack"></div>
-            <span class="meter-max-label" id="hpMaxLabel">/20</span>
-          </div>
-          <div class="hp-bonus-row">
-            <div><label>Bônus de Classe</label><input type="number" id="hpClassBonus" value="0"></div>
-            <div><label>DEF</label><input type="text" id="hpBase" readonly></div>
-            <div><label>Bônus manual</label><input type="number" id="hpManualBonus" value="0"></div>
-          </div>
+        <div id="itemsList" class="items-list"></div>
+      </div>
+    </div>
 
-          <div class="meter-row" style="margin-top:8px;">
-            <span class="m-label">HOPE</span>
-            <div class="meter-track" id="hopeTrack"></div>
-            <input type="number" id="hopeMax" readonly style="width:42px !important;flex:0 0 42px;text-align:center;font-size:11px;padding:3px;">
-          </div>
-          <div class="meter-row">
-            <span class="m-label">LOVE</span>
-            <div class="meter-track" id="loveTrack"></div>
-          </div>
-          <div class="karma-row">
-            <span class="m-label">KARMA</span>
-            <div class="stepper"><button id="karmaMinus">−</button><span class="karma-val" id="karmaVal">0</span><button id="karmaPlus">+</button></div>
-            <div class="karma-track" id="karmaTrack"></div>
-          </div>
+  </div>
+</section>
 
-          <div class="dice-area">
-            <button class="ui-btn dice-btn" id="rollDano">🎲 Dano (GRR)</button>
-            <button class="ui-btn dice-btn" id="rollMagia">🎲 Magia (ESP)</button>
-          </div>
-          <div class="dice-out" id="diceOut">Resultado da rolagem aparece aqui.</div>
+<!-- =================== PAGE 3: INFO =================== -->
+<section class="page" id="page3">
+  <div class="sheet-title">ALMA &amp; HABILIDADES</div>
+  <div class="page-body">
+
+    <!-- COL 1: foto + info -->
+    <div class="col" style="flex:0 0 260px;">
+      <div class="portrait-wrap">
+        <div class="portrait" id="portraitBtn3">
+          <svg class="soul-spark" viewBox="0 0 24 24" id="soulSvg3"><path d="M12 0 L14 9 L24 12 L14 15 L12 24 L10 15 L0 12 L10 9 Z"/></svg>
+          <img id="portraitImg3" style="display:none;">
         </div>
       </div>
 
-      <div class="col" style="flex:0 0 180px;">
-        <div class="section" style="flex:1; overflow:auto;">
-          <h2>ITENS <span style="font-size:10px;color:var(--ink-dim)">(máx. 10)</span></h2>
-          <div class="items-grid" id="itemsGrid"></div>
+      <div class="panel-box">
+        <div class="panel-title"><span class="ic">♥</span> INFO</div>
+
+        <label class="f">Alma</label>
+        <div class="soul-row" style="margin-bottom:6px;">
+          <div class="soul-swatch" id="soulSwatch"></div>
+          <select id="infoAlma" style="flex:1;">
+            <option value="Determinação">Determinação (Vermelho)</option>
+            <option value="Bravura">Bravura (Laranja)</option>
+            <option value="Justiça">Justiça (Amarelo)</option>
+            <option value="Perseverança">Perseverança (Roxo)</option>
+            <option value="Bondade">Bondade (Verde)</option>
+            <option value="Integridade">Integridade (Azul)</option>
+            <option value="Monstro">Monstro (Branco)</option>
+            <option value="Darkner">Darkner (Preto/Roxo)</option>
+            <option value="Personalizada">Personalizada...</option>
+          </select>
+        </div>
+        <div id="customAlmaBox">
+          <label class="f" style="margin:0;">Cor personalizada:</label>
+          <input type="color" id="almaColorPicker" value="#cd0b22" style="width:42px;flex:0 0 42px;height:28px;padding:1px;cursor:pointer;">
+          <input type="text" id="almaColorText" placeholder="#rrggbb" style="flex:1;">
+        </div>
+
+        <div class="field-pair" style="margin-top:10px;">
+          <div><label class="f">Classe</label><input type="text" id="infoClasse" placeholder="ex: Lutador" style="font-size:15px;"></div>
+        </div>
+        <div class="field-pair">
+          <div><label class="f">Trilha</label><input type="text" id="infoTrilha" placeholder="ex: Impactante" style="font-size:15px;"></div>
+        </div>
+
+        <!-- Bônus de classe -->
+        <div style="margin-top:10px;border-top:1px dashed var(--border-dim);padding-top:10px;">
+          <div class="subtle" style="margin-bottom:6px;">Bônus de classe (ultrapassam limite normal)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+            <div><label class="f">+1 atributo</label><select id="classAtrUp"></select></div>
+            <div><label class="f">−1 atributo</label><select id="classAtrDown"></select></div>
+          </div>
+          <div><label class="f">+1 perícia</label><select id="classPericiaBonus"></select></div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- PÁGINA 3 -->
-  <section class="page" id="page-3">
-    <div class="sheet-title">ALMA &amp; HABILIDADES</div>
-    <div class="page-body">
-      <div class="col" style="flex:0 0 230px;">
-        <div class="section" style="flex:0 0 auto; text-align:center;">
-          <div class="photo-frame" id="photoFrame3" style="margin:0 auto;"></div>
-        </div>
-        <div class="section" style="flex:1; overflow:auto;">
-          <h2>INFO</h2>
-          <div class="soul-row">
-            <div class="soul-swatch" id="soulSwatch"></div>
-            <div style="flex:1;">
-              <label class="field-label">Alma</label>
-              <select id="infoAlma">
-                <option value="Determinação">Determinação (Vermelho)</option>
-                <option value="Bravura">Bravura (Laranja)</option>
-                <option value="Justiça">Justiça (Amarelo)</option>
-                <option value="Perseverança">Perseverança (Roxo)</option>
-                <option value="Bondade">Bondade (Verde)</option>
-                <option value="Integridade">Integridade (Azul)</option>
-                <option value="Monstro">Monstro (Branco)</option>
-                <option value="Darkner">Darkner (Preto/Roxo escuro)</option>
-                <option value="Personalizada">Personalizada...</option>
-              </select>
-            </div>
-          </div>
-          <div id="customAlmaBox">
-            <label class="field-label" style="margin:0;">Cor:</label>
-            <input type="color" id="almaCustomColorPicker" value="#cd0b22" style="width:42px;flex:0 0 42px;">
-            <input type="text" id="almaCustomColorText" placeholder="#rrggbb" style="flex:1;">
-          </div>
-          <div class="field-pair" style="margin-top:8px;">
-            <div><label class="field-label">Classe</label><input type="text" id="infoClasse" placeholder="ex: Andarilho do Vazio"></div>
-          </div>
-          <div class="field-pair">
-            <div><label class="field-label">Trilha</label><input type="text" id="infoTrilha" placeholder="ex: Trilha das Cinzas"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col" style="flex:1; min-height:0;">
-        <div class="section" style="flex:1; min-height:0; overflow:auto;">
-          <h2>HABILIDADES</h2>
-          <div id="abilityList"></div>
-          <div class="add-row"><button class="ui-btn" id="addAbility">+ Adicionar Habilidade</button></div>
+    <!-- COL 2: habilidades -->
+    <div class="col" style="flex:1;min-height:0;">
+      <div class="panel-box" style="margin-top:0;">
+        <div class="panel-title"><span class="ic">✦</span> MAGIAS E HABILIDADES</div>
+        <div id="habilidadesList" style="margin-top:6px;"></div>
+        <div class="add-row no-print">
+          <button class="btn primary" id="btnAddHab">+ Adicionar habilidade / magia</button>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- PÁGINA 4 -->
-  <section class="page" id="page-4">
-    <div class="sheet-title">ANOTAÇÕES</div>
-    <div class="page-body">
-      <div class="col notes-col" style="flex:1; min-height:0;">
-        <div class="section" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-          <h2>Anotações I</h2>
-          <textarea id="notes1" placeholder="Anote aqui..." style="flex:1;"></textarea>
-        </div>
-      </div>
-      <div class="col notes-col" style="flex:1; min-height:0;">
-        <div class="section" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-          <h2>Anotações II</h2>
-          <textarea id="notes2" placeholder="Anote aqui..." style="flex:1;"></textarea>
-        </div>
-      </div>
+  </div>
+</section>
+
+<!-- =================== PAGE 4: ANOTAÇÕES =================== -->
+<section class="page" id="page4">
+  <div class="sheet-title">ANOTAÇÕES</div>
+  <div class="notes-grid">
+    <div>
+      <label class="f">Anotações I</label>
+      <textarea id="notes1" placeholder="..."></textarea>
     </div>
-  </section>
+    <div>
+      <label class="f">Anotações II</label>
+      <textarea id="notes2" placeholder="..."></textarea>
+    </div>
+  </div>
+</section>
 
-</div>
+</div><!-- end sheet-wrap -->
 
 <script>
-(function(){
 "use strict";
+/* ============================================================
+   DON'T FORGET — Ficha Interativa v3
+   ============================================================ */
 
-/* ===================== CONFIG DO SISTEMA ===================== */
+/* ---- Storage ---- */
+const MEM = {};
+let usingMem = false;
+const LS = {
+  get(k){ try{return localStorage.getItem(k);}catch(e){usingMem=true;return MEM[k]??null;} },
+  set(k,v){ try{localStorage.setItem(k,v);}catch(e){usingMem=true;MEM[k]=v;} }
+};
+const STORAGE_KEY = 'dontforget_v3';
+
+/* ---- Data constants ---- */
 const ATTRS = [
-  {key:"GRR", name:"Garra"},
-  {key:"FRM", name:"Firmeza"},
-  {key:"RPZ", name:"Rapidez"},
-  {key:"ESP", name:"Esperteza"},
-  {key:"CHM", name:"Charme"},
-  {key:"MRL", name:"Moral"},
+  {key:'GRR',name:'Garra',   clr:'var(--red)'},
+  {key:'FRM',name:'Firmeza', clr:'var(--orange)'},
+  {key:'RPZ',name:'Rapidez', clr:'var(--yellow)'},
+  {key:'ESP',name:'Esperteza',clr:'var(--purple)'},
+  {key:'CHM',name:'Charme',  clr:'var(--green)'},
+  {key:'MRL',name:'Moral',   clr:'var(--blue)'},
 ];
-// Agrupamento de perícias por atributo, confirmado no rulebook (pág. 19-22).
 const SKILL_MAP = {
-  GRR:["Atletismo","Briga","Intimidação"],
-  FRM:["Bloqueio","Vigor","Escalada"],
-  RPZ:["Disparo","Esquiva","Furtividade"],
-  ESP:["Foco","História","Percepção"],
-  CHM:["Enganação","Exibição","Persuasão"],
-  MRL:["Vontade","Intuição","Inspiração"],
+  GRR:['Atletismo','Briga','Intimidação'],
+  FRM:['Bloqueio','Vigor','Escalada'],
+  RPZ:['Disparo','Esquiva','Furtividade'],
+  ESP:['Foco','História','Percepção'],
+  CHM:['Enganação','Exibição','Persuasão'],
+  MRL:['Vontade','Intuição','Inspiração'],
 };
+const ALL_SKILLS = Object.values(SKILL_MAP).flat();
 const SOUL_COLORS = {
-  "Determinação":"#cd0b22",
-  "Bravura":"#fd7b1e",
-  "Justiça":"#ffb422",
-  "Perseverança":"#a348a3",
-  "Bondade":"#23b04b",
-  "Integridade":"#236bf2",
-  "Monstro":"#ffffff",
-  "Darkner":"#2e1b5b",
+  'Determinação':'#cd0b22','Bravura':'#fd7b1e','Justiça':'#ffb422',
+  'Perseverança':'#a348a3','Bondade':'#23b04b','Integridade':'#236bf2',
+  'Monstro':'#ffffff','Darkner':'#1a0a2e','Personalizada':'#ff66ff',
+};
+const SOUL_FONT_COLOR = {
+  'Monstro':'#000000','Darkner':'#ffffff',
 };
 
-const STORAGE_KEY = "dontforget_sheet_v2";
-
-function baseAttrMax(level){ return 5 + 2*(level-1); }
-function basePoolTotal(level){
-  let base = 12 + 3*(level-1);
-
-  if(level >= 7){
-    base += 3; // bônus do nível 7
-  }
-
-  return base;
+/* ---- Formulas ---- */
+function attrMax(lvl){ return 5+2*(Math.max(1,Math.min(7,lvl))-1); }
+function poolTotal(lvl){
+  lvl=Math.max(1,Math.min(7,lvl));
+  let b=12+3*(lvl-1); if(lvl>=7) b+=3; return b;
 }
-// Limite de perícia = metade do Limite de Atributo (global, por nível) — pág. 20 do rulebook.
-function skillCapForLevel(level){ return Math.floor(baseAttrMax(level)/2); }
+function skillCap(lvl){ return Math.floor(attrMax(lvl)/2); }
 
-/* ===================== ESTADO ===================== */
+/* ---- Default state ---- */
 function defaultState(){
-  const attrs = {}, attrBonus = {}; ATTRS.forEach(a=>{attrs[a.key]=2; attrBonus[a.key]=0;});
-  const skills = {}, skillBonus = {}; Object.values(SKILL_MAP).flat().forEach(s=>{skills[s]=0; skillBonus[s]=0;});
-  const items = new Array(10).fill("");
+  const attrs={},attrBonus={};
+  ATTRS.forEach(a=>{attrs[a.key]=0;attrBonus[a.key]=0;});
+  const skills={},skillBonus={};
+  ALL_SKILLS.forEach(s=>{skills[s]=0;skillBonus[s]=0;});
   return {
-    name:"", title:"", level:1, image:null,
-    attrs, attrBonus, skills, skillBonus,
-    equip:{
-      arma:{nome:"",desc:""},
-      armadura:{nome:"",desc:""},
-      amuleto:{nome:"",desc:""},
-    },
-    status:{
-      hpCur:20, hpBase:20, hpClassBonus:0, hpManualBonus:0,
-      hopeCur:10, hopeMax:10,
-      love:0, karma:0,
-      atkBonus:0, defBonus:0, magBonus:0,
-    },
-    items,
-    info:{ alma:"Determinação", classe:"", trilha:"", almaCustomColor:"#cd0b22" },
-    abilities:[],
-    notes:{ note1:"", note2:"" },
-    page:1,
+    name:'',title:'',level:1,image:null,page:1,
+    attrs,attrBonus,skills,skillBonus,
+    equip:{arma:{nome:'',desc:''},armadura:{nome:'',desc:''},amuleto:{nome:'',desc:''}},
+    items: Array.from ({length:10}, () => ({
+    nome: '',
+    desc: ''
+    })),
+    status:{hpCur:null,hpClassBonus:0,hpManualBonus:0,hopeCur:null,love:0,karma:0,atkBonus:0,defBonus:0,magBonus:0},
+    info:{alma:'Determinação',almaCustomColor:'#ff66ff'},
+    classe:{nome:'',trilha:'',atrUp:'',atrDown:'',periciaBonus:''},
+    habilidades:[],
+    notes:{n1:'',n2:''},
   };
 }
 
-let state = loadState();
-
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return defaultState();
-    const parsed = JSON.parse(raw);
-    const d = defaultState();
-    return Object.assign(d, parsed, {
-      attrs:Object.assign(d.attrs, parsed.attrs||{}),
-      attrBonus:Object.assign(d.attrBonus, parsed.attrBonus||{}),
-      skills:Object.assign(d.skills, parsed.skills||{}),
-      skillBonus:Object.assign(d.skillBonus, parsed.skillBonus||{}),
-      equip:Object.assign(d.equip, parsed.equip||{}),
-      status:Object.assign(d.status, parsed.status||{}),
-      info:Object.assign(d.info, parsed.info||{}),
-      items: (parsed.items && parsed.items.length===10) ? parsed.items : d.items,
-      abilities: parsed.abilities || [],
-      notes: Object.assign(d.notes, parsed.notes||{}),
-    });
-  }catch(e){ console.warn("Falha ao carregar ficha salva, usando padrão.", e); return defaultState(); }
-}
+let state = defaultState();
+try{const r=LS.get(STORAGE_KEY);if(r){const p=JSON.parse(r);state=Object.assign(defaultState(),p,{attrs:Object.assign(defaultState().attrs,p.attrs||{}),attrBonus:Object.assign(defaultState().attrBonus,p.attrBonus||{}),skills:Object.assign(defaultState().skills,p.skills||{}),skillBonus:Object.assign(defaultState().skillBonus,p.skillBonus||{}),equip:Object.assign(defaultState().equip,p.equip||{}),status:Object.assign(defaultState().status,p.status||{}),info:Object.assign(defaultState().info,p.info||{}),classe:Object.assign(defaultState().classe,p.classe||{}),notes:Object.assign(defaultState().notes,p.notes||{}), items:
+    p.items && p.items.length===10
+        ? p.items.map(item=>{
+            if(typeof item==="string"){
+                return {
+                    nome:item,
+                    desc:""
+                };
+            }
+            return {
+                nome:item.nome||"",
+                desc:item.desc||""
+            };
+        })
+        : defaultState().items,habilidades:p.habilidades||[]});}}catch(e){}
 
 let saveTimer=null;
-function saveState(){
+function save(){
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-    catch(e){ console.warn("Não foi possível salvar a ficha.", e); }
-  }, 150);
+  saveTimer=setTimeout(()=>{
+    LS.set(STORAGE_KEY,JSON.stringify(state));
+    el('storageNote').textContent=usingMem?'Aviso: dados ficam só nesta sessão.':'Salvo automaticamente.';
+  },150);
 }
 
-/* ===================== HELPERS ===================== */
-function $(id){ return document.getElementById(id); }
-function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-function rollDie(sides){ return 1 + Math.floor(Math.random()*sides); }
-function num(v){ const n = parseInt(v,10); return isNaN(n) ? 0 : n; }
-function effAttr(key){ return state.attrs[key] + num(state.attrBonus[key]); }
-function effSkill(sk){ return state.skills[sk] + num(state.skillBonus[sk]); }
+/* ---- Helpers ---- */
+function el(id){return document.getElementById(id);}
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
+function rollDie(s){return 1+Math.floor(Math.random()*s);}
+function num(v){const n=parseInt(v,10);return isNaN(n)?0:n;}
+function effAttr(k){return (state.attrs[k]||0)+(num(state.attrBonus[k])||0)+(state.classe.atrUp===k?1:0)+(state.classe.atrDown===k?-1:0);}
+function effSkill(s){let v=(state.skills[s]||0)+(num(state.skillBonus[s])||0);if(state.classe.periciaBonus===s)v++;return v;}
+function accentColor(){if(state.info.alma==='Personalizada')return state.info.almaCustomColor||'#ff66ff';return SOUL_COLORS[state.info.alma]||'#cd0b22';}
+function textColorFor(hex){const c=hex.replace('#','');if(c.length!==6)return'#fff';const r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return(0.299*r+0.587*g+0.114*b)>150?'#000':'#fff';}
 
-/* ===================== PÁGINAS ===================== */
+function calcATK(){ return effAttr('GRR')*5+(state.status.atkBonus||0)+(state.status.love||0)*2; }
+function calcDEF(){ return effAttr('FRM')*3+(state.status.defBonus||0)+(state.status.love||0)*2; }
+function calcMAG(){ return effAttr('ESP')*5+(state.status.magBonus||0); }
+function calcHPMax(){ return Math.max(1,calcDEF()+(state.status.hpClassBonus||0)+(state.status.hpManualBonus||0)); }
+function calcHopeMax(){ return 5+effAttr('MRL')*2; }
+
+/* ---- Apply soul theme ---- */
+function applyTheme(){
+  const c=accentColor();
+  document.documentElement.style.setProperty('--soul',c);
+  document.documentElement.style.setProperty('--soul-glow',c+'44');
+  el('soulSwatch').style.background=c;
+  ['1','2','3'].forEach(n=>{const s=el('soulSvg'+n);if(s)s.style.fill=c;});
+  // background gradient changes with soul
+  document.documentElement.style.setProperty('--soul-grad',c);
+}
+
+/* ---- Pager ---- */
 function goToPage(n){
-  state.page = n;
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  $("page-"+n).classList.add("active");
-  document.querySelectorAll("#pager button").forEach(b=>b.classList.toggle("active", +b.dataset.p===n));
-  saveState();
+  state.page=n;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  el('page'+n).classList.add('active');
+  document.querySelectorAll('.pager-btn').forEach(b=>b.classList.toggle('active',+b.dataset.page===n));
+  save();
 }
-function buildPager(){
-  const pager = $("pager");
-  pager.innerHTML = "";
+document.querySelectorAll('.pager-btn').forEach(b=>b.addEventListener('click',()=>goToPage(+b.dataset.page)));
 
-  const icons = [
-    { page: 1, src: "Personagem.png" },
-    { page: 2, src: "Itens.png" },
-    { page: 3, src: "habilidades.png" },
-    { page: 4, src: "anotações.png" },
-  ];
-
-  icons.forEach(icon => {
-    const btn = document.createElement("button");
-    btn.className = "pager-icon";
-    btn.dataset.p = icon.page;
-
-    const img = document.createElement("img");
-    img.src = icon.src;
-    img.alt = "page icon";
-
-    btn.appendChild(img);
-
-    btn.addEventListener("click", () => goToPage(icon.page));
-
-    pager.appendChild(btn);
+/* ---- Photo ---- */
+function syncPhotos(){
+  ['1','2','3'].forEach(n=>{
+    const img=el('portraitImg'+n),svg=el('soulSvg'+n);
+    if(state.image){img.src=state.image;img.style.display='block';svg.style.display='none';}
+    else{img.style.display='none';svg.style.display='block';}
   });
 }
+el('photoInput').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader(); r.onload=()=>{state.image=r.result;syncPhotos();save();};
+  r.readAsDataURL(f);
+});
+['portraitBtn1','portraitBtn2','portraitBtn3'].forEach(id=>el(id).addEventListener('click',()=>el('photoInput').click()));
 
-/* ===================== FOTO (compartilhada, mesmo tamanho nas 3 páginas) ===================== */
-function renderPhoto(){
-  [1,2,3].forEach(n=>{
-    const frame = $("photoFrame"+n);
-    if(state.image){
-      frame.innerHTML = `<img src="${state.image}" alt="Foto do personagem">`;
-    } else {
-      frame.innerHTML = n===1 ? `<span class="hint">clique para<br>adicionar foto</span>` : `<span class="hint">sem foto</span>`;
-    }
-  });
-}
-function bindPhoto(){
-  const input = $("photoInput");
-  [1,2,3].forEach(n=>{
-    $("photoFrame"+n).addEventListener("click", ()=>input.click());
-  });
-  input.addEventListener("change", (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ()=>{ state.image = reader.result; renderPhoto(); saveState(); };
-    reader.readAsDataURL(file);
-  });
+/* ---- Header ---- */
+function bindHeader(){
+  el('charName').value=state.name;
+  el('charTitle').value=state.title;
+  el('charName').addEventListener('input',e=>{state.name=e.target.value;save();});
+  el('charTitle').addEventListener('input',e=>{state.title=e.target.value;save();});
 }
 
-/* ===================== ATRIBUTOS ===================== */
-function attrMax(){ return baseAttrMax(state.level); }
-function poolTotal(){ return basePoolTotal(state.level); }
-function attrUsed(){ return ATTRS.reduce((s,a)=>s+state.attrs[a.key],0); }
+/* ---- Level ---- */
+function renderLevel(){
+  el('lvlVal').textContent=state.level;
+}
+function setLevel(n){
+  state.level=clamp(n,1,7);
+  const max=attrMax(state.level);
+  ATTRS.forEach(a=>{if(state.attrs[a.key]>max)state.attrs[a.key]=max;});
+  // clamp skills
+  const sc=skillCap(state.level);
+  ALL_SKILLS.forEach(s=>{if(state.skills[s]>sc)state.skills[s]=sc;});
+  renderLevel(); renderAttrs(); renderSkills(); renderStatus(); save();
+}
+el('lvlMinus').addEventListener('click',()=>setLevel(state.level-1));
+el('lvlPlus').addEventListener('click',()=>setLevel(state.level+1));
 
+/* ---- Attributes ---- */
 function renderAttrs(){
-  const max = attrMax();
-  const used = attrUsed();
-  const total = poolTotal();
-  const note = $("attrPointsNote");
-  note.classList.toggle("over", used>total);
-  note.innerHTML = `Pontos: <span>${used}/${total}</span> · Máx/atributo: <span id="attrMax">${max}</span>`;
-
-  const list = $("attrList");
-  list.innerHTML="";
+  const max=attrMax(state.level),total=poolTotal(state.level);
+  const used=ATTRS.reduce((s,a)=>s+(state.attrs[a.key]||0),0);
+  const note=el('attrPointsNote');
+  note.classList.toggle('over',used>total);
+  note.innerHTML=`Pontos: <span class="hi">${used}/${total}</span> · Máx/atrib: <span class="hi" id="attrMaxNote">${max}</span>`;
+  const list=el('attrList');
+  list.innerHTML='';
+  const acc=accentColor();
   ATTRS.forEach(a=>{
-    const val = state.attrs[a.key];
-    const bonus = state.attrBonus[a.key]||0;
-    const row = document.createElement("div");
-    row.className="attr-row";
-    row.innerHTML = `
-      <div class="attr-tag" style="background:${accentColor()};color:${textColorFor(accentColor())};">${a.key}</div>
-      <button class="ui-btn" data-act="minus" style="padding:1px 6px;">−</button>
-      <div class="pips" data-pips></div>
-      <button class="ui-btn" data-act="plus" style="padding:1px 6px;">+</button>
-      <div class="val">${val}/${max}</div>
-      <input type="number" class="bonus-input" data-bonus value="${bonus}" title="Bônus de ${a.name}">
+    const val=state.attrs[a.key]||0;
+    const bonus=state.attrBonus[a.key]||0;
+    const eff=effAttr(a.key);
+    const row=document.createElement('div');
+    row.className='attr-row';
+    // name is clickable to roll d20+attr
+    row.innerHTML=`
+      <div class="attr-tag" style="background:${acc};color:${textColorFor(acc)};cursor:pointer;" data-rollattr="${a.key}" title="Clique para rolar d20+${a.key}">${a.key}</div>
+      <span class="attr-name-click" style="flex:0 0 78px;font-size:11px;color:var(--text-dim);cursor:pointer;white-space:nowrap;" </span>
+      <input type="number" class="attr-num-inp" data-attr="${a.key}" value="${val}" min="0" max="${max}" style="width:44px;text-align:center;">
+      <span style="display:inline-block;min-width:28px;margin-left:4px;font-size:11px;color:var(--text-dim);">/ ${max}</span>
+      <span style="font-size:10px;color:var(--text-dim);margin-left:4px;">bônus:</span>
+      <input type="number" class="attr-bonus-inp" data-bonus="${a.key}" value="${bonus}" style="width:38px;text-align:center;">
+      <span style="font-size:11px;font-weight:bold;color:${acc};margin-left:6px;min-width:24px;text-align:right;">=&nbsp;${eff}</span>
     `;
-    const pipsEl = row.querySelector("[data-pips]");
-    for(let i=1;i<=max;i++){
-      const p=document.createElement("span");
-      p.className="pip"+(i<=val?" filled":"");
-      p.style.background = i<=val ? accentColor() : "transparent";
-      p.addEventListener("click", ()=>setAttr(a.key, i===val ? i-1 : i));
-      pipsEl.appendChild(p);
-    }
-    row.querySelector('[data-act="minus"]').addEventListener("click", ()=>setAttr(a.key, val-1));
-    row.querySelector('[data-act="plus"]').addEventListener("click", ()=>setAttr(a.key, val+1));
-    row.querySelector('[data-bonus]').addEventListener("input", (e)=>{ state.attrBonus[a.key]=num(e.target.value); renderStatus(); saveState(); });
+    row.querySelectorAll('[data-rollattr]').forEach(el2=>{
+      el2.addEventListener('click',()=>{
+        const d=rollDie(20),t=d+effAttr(a.key);
+        addLog(`${a.key} → d20(${d})+${effAttr(a.key)}=${t}`);
+        showResult(`<div>${a.name} (d20+${a.key})</div><div>[${d}] + ${effAttr(a.key)}</div><div class="total">${t}</div>`);
+      });
+    });
+    row.querySelector('.attr-num-inp').addEventListener('input',e=>{
+      let v=num(e.target.value);
+      if(v<0)v=0; if(v>max)v=max;
+      const prevVal=state.attrs[a.key]||0;
+      const usedOthers=ATTRS.reduce((s,x)=>s+(x.key===a.key?0:state.attrs[x.key]||0),0);
+      if(v>prevVal && usedOthers+v>total){ v=total-usedOthers; }
+      if(v<0)v=0;
+      state.attrs[a.key]=v; e.target.value=v;
+      const sc=skillCap(state.level);
+      (SKILL_MAP[a.key]||[]).forEach(s=>{if(state.skills[s]>sc)state.skills[s]=sc;});
+      renderAttrs();renderSkills();renderStatus();save();
+    });
+    row.querySelector('[data-bonus]').addEventListener('input',e=>{
+      state.attrBonus[a.key]=num(e.target.value);renderStatus();save();
+    });
     list.appendChild(row);
   });
 }
-
-function setAttr(key, newVal){
-  const max = attrMax();
-  newVal = clamp(newVal, 0, max);
-  const used = attrUsed() - state.attrs[key] + newVal;
-  if(newVal > state.attrs[key] && used > poolTotal()) return; // sem pontos sobrando
-  state.attrs[key] = newVal;
-  clampSkillsForAttr(key);
-  renderAttrs(); renderSkills(); renderStatus();
-  saveState();
+function setAttr(key,nv){
+  const max=attrMax(state.level);
+  nv=clamp(nv,0,max);
+  const used=ATTRS.reduce((s,a)=>s+(a.key===key?0:state.attrs[a.key]||0),0)+nv;
+  if(nv>(state.attrs[key]||0)&&used>poolTotal(state.level))return;
+  state.attrs[key]=nv;
+  const sc=skillCap(state.level);
+  (SKILL_MAP[key]||[]).forEach(s=>{if(state.skills[s]>sc)state.skills[s]=sc;});
+  renderAttrs();renderSkills();renderStatus();save();
 }
 
-/* ===================== PERÍCIAS ===================== */
-// Limite por perícia: metade do Limite de Atributo do nível atual (igual para todas as perícias).
-function skillCap(){ return skillCapForLevel(state.level); }
-function skillPool(attrKey){ return state.attrs[attrKey]; }
-function skillGroupUsed(attrKey){ return SKILL_MAP[attrKey].reduce((s,sk)=>s+state.skills[sk],0); }
-
-function clampSkillsForAttr(attrKey){
-  const cap = skillCap();
-  SKILL_MAP[attrKey].forEach(sk=>{ if(state.skills[sk]>cap) state.skills[sk]=cap; });
-  let pool = skillPool(attrKey);
-  let used = skillGroupUsed(attrKey);
-  const order = [...SKILL_MAP[attrKey]].reverse();
-  let i=0;
-  while(used>pool && i<50){
-    const sk = order[i % order.length];
-    if(state.skills[sk]>0){ state.skills[sk]--; used--; }
-    i++;
-  }
-}
-function clampAllSkillsToCap(){
-  const cap = skillCap();
-  Object.values(SKILL_MAP).flat().forEach(sk=>{ if(state.skills[sk]>cap) state.skills[sk]=cap; });
-}
-
+/* ---- Skills ---- */
 function renderSkills(){
-  $("skillCapNote").textContent = skillCap();
-  const list = $("skillList");
-  list.innerHTML="";
-  const cap = skillCap();
-  ATTRS.forEach(a=>{
-    const pool = skillPool(a.key);
-    const used = skillGroupUsed(a.key);
-    const group = document.createElement("div");
-    group.className="skill-group";
-    group.innerHTML = `<div class="group-head"><span>${a.name} (${a.key})</span><span>Pts ${used}/${pool}</span></div>`;
+  const cap=skillCap(state.level);
+  el('skillCapNote').textContent=cap;
+  const list=el('skillList');
+  list.innerHTML='';
+  const acc=accentColor();
+  // two column layout
+  const colA=document.createElement('div'),colB=document.createElement('div');
+  list.appendChild(colA);list.appendChild(colB);
+  ATTRS.forEach((a,idx)=>{
+    const target=idx%2===0?colA:colB;
+    const pool=state.attrs[a.key]||0;
+    const used=SKILL_MAP[a.key].reduce((s,sk)=>s+(state.skills[sk]||0),0);
+    const group=document.createElement('div');
+    group.className='skill-group';
+    group.innerHTML=`<div class="group-head" style="color:${a.clr};border-color:${a.clr};"><span>${a.name} (${a.key})</span><span>Pts ${used}/${pool}</span></div>`;
     SKILL_MAP[a.key].forEach(sk=>{
-      const val = state.skills[sk];
-      const bonus = state.skillBonus[sk]||0;
-      const row = document.createElement("div");
-      row.className="skill-row";
-      row.innerHTML = `
-        <span class="skill-name" title="Clique para rolar d20+perícia">${sk}</span>
-        <button class="ui-btn" data-act="minus" style="padding:0 5px;">−</button>
-        <div class="pips" data-pips></div>
-        <button class="ui-btn" data-act="plus" style="padding:0 5px;">+</button>
-        <span style="font-size:11px;min-width:12px;text-align:center;">${val}</span>
-        <input type="number" class="bonus-input" data-bonus value="${bonus}" title="Bônus de ${sk}">
-        <span class="roll-result" data-result></span>
+      const val=state.skills[sk]||0;
+      const bonus=state.skillBonus[sk]||0;
+      const total=effSkill(sk);
+      const row=document.createElement('div');
+      row.className='skill-row';
+      row.innerHTML=`
+        <span class="skill-name" title="Clique para rolar d20+perícia+atributo">${sk}</span>
+        <input type="number" class="skill-num-inp" data-sk="${sk}" data-ak="${a.key}" value="${val}" min="0" max="${cap}" style="width:38px;text-align:center;font-size:11px;">
+        <span style="font-size:10px;color:var(--text-dim);">bôn:</span>
+        <input type="number" class="skill-bonus-inp" data-bonus="${sk}" value="${bonus}" style="width:34px;font-size:11px;text-align:center;">
+        <span style="font-size:11px;font-weight:bold;color:${acc};min-width:18px;text-align:center;">=&nbsp;${total}</span>
+        <span class="skill-roll-result" data-result></span>
       `;
-      const pipsEl = row.querySelector("[data-pips]");
-      for(let i=1;i<=Math.max(cap,1);i++){
-        const p=document.createElement("span");
-        p.className="pip skill"+(i<=val?" filled":"")+(i>cap?" locked":"");
-        p.style.background = (i<=val) ? accentColor() : "transparent";
-        if(i<=cap) p.addEventListener("click", ()=>setSkill(sk,a.key, i===val?i-1:i));
-        pipsEl.appendChild(p);
-      }
-      row.querySelector('[data-act="minus"]').addEventListener("click", ()=>setSkill(sk,a.key,val-1));
-      row.querySelector('[data-act="plus"]').addEventListener("click", ()=>setSkill(sk,a.key,val+1));
-      row.querySelector('[data-bonus]').addEventListener("input", (e)=>{ state.skillBonus[sk]=num(e.target.value); saveState(); });
-      row.querySelector(".skill-name").addEventListener("click", ()=>rollSkillCheck(sk,row));
+      row.querySelector('.skill-name').addEventListener('click',()=>{
+        const d=rollDie(20),sv=effSkill(sk),av=effAttr(a.key),t=d+sv+av;
+        const res=`d20(${d}) + ${sk}(${sv}) + ${a.key}(${av}) = ${t}`;
+        row.querySelector('[data-result]').textContent=res;
+        addLog(`${sk} → ${t}`);
+        showResult(`<div>${sk}</div><div>${res}</div><div class="total">${t}</div>`);
+      });
+      row.querySelector('.skill-num-inp').addEventListener('input',e=>{
+        let v=num(e.target.value);
+        if(v<0)v=0; if(v>cap)v=cap;
+        const usedOthers=SKILL_MAP[a.key].reduce((s,s2)=>s+(s2===sk?0:state.skills[s2]||0),0);
+        if(v>0 && usedOthers+v>pool){ v=Math.max(0,pool-usedOthers); }
+        state.skills[sk]=v; e.target.value=v;
+        renderSkills();save();
+      });
+      row.querySelector('[data-bonus]').addEventListener('input',e=>{
+        state.skillBonus[sk]=num(e.target.value);renderSkills();save();
+      });
       group.appendChild(row);
     });
-    list.appendChild(group);
+    target.appendChild(group);
   });
 }
-
-function setSkill(sk, attrKey, newVal){
-  const cap = skillCap();
-  newVal = clamp(newVal,0,cap);
-  const used = skillGroupUsed(attrKey) - state.skills[sk] + newVal;
-  if(newVal > state.skills[sk] && used > skillPool(attrKey)) return;
-  state.skills[sk] = newVal;
-  renderSkills();
-  saveState();
+function setSkill(sk,attrKey,nv){
+  const cap=skillCap(state.level);
+  nv=clamp(nv,0,cap);
+  const pool=state.attrs[attrKey]||0;
+  const used=SKILL_MAP[attrKey].reduce((s,s2)=>s+(state.skills[s2]||0),0)-(state.skills[sk]||0)+nv;
+  if(nv>(state.skills[sk]||0)&&used>pool)return;
+  state.skills[sk]=nv;
+  renderSkills();save();
 }
 
-function rollSkillCheck(sk, rowEl){
-  let attrKey = null;
-
-  for(const key in SKILL_MAP){
-    if(SKILL_MAP[key].includes(sk)){
-      attrKey = key;
-      break;
-    }
-  }
-
-  const atributo = effAttr(attrKey);
-  const pericia = effSkill(sk);
-
-  const d20 = rollDie(20);
-  const total = d20 + atributo + pericia;
-
-  const out = rowEl.querySelector("[data-result]");
-
-  out.textContent =
-    `d20(${d20}) + ${atributo} (${attrKey}) + ${pericia} (${sk}) = ${total}`;
-}
-
-/* ===================== NÍVEL ===================== */
-function renderLevel(){ $("lvlVal").textContent = state.level; }
-function setLevel(n){
-  state.level = clamp(n,1,7);
-  const max = attrMax();
-  ATTRS.forEach(a=>{ if(state.attrs[a.key]>max) state.attrs[a.key]=max; });
-  clampAllSkillsToCap();
-  ATTRS.forEach(a=>clampSkillsForAttr(a.key));
-  renderLevel(); renderAttrs(); renderSkills(); renderStatus();
-  saveState();
-}
-
-/* ===================== STATUS ===================== */
-function dmgDiceCount(grr){ return 1 + Math.floor(grr/2); }
-
-function hpMax(){
-  const frm = effAttr('FRM');
-  const love = state.status.love || 0;
-
-  const base =
-    frm * 3 +
-    love * 2;
-
-  const levelBonus = (state.level - 1) * 20; // 👈 AQUI está o +20 por nível
-
-  return Math.max(
-    1,
-    base +
-    levelBonus +
-    num(state.status.hpClassBonus) +
-    num(state.status.hpManualBonus)
-  );
-}
-
-function hopeMaxCalc(){
-  return 5 + (state.attrs.MRL * 2);
-}
-
+/* ---- Status ---- */
 function renderStatus(){
-  const grr=effAttr('GRR'), frm=effAttr('FRM'), esp=effAttr('ESP');
-  const love = state.status.love||0;
-  const atk = grr*5 + love*2 + num(state.status.atkBonus);
-  const def = frm*3 + love*2 + num(state.status.defBonus);
-  const mag = esp*5 + num(state.status.magBonus);
-  $("statAtk").textContent = atk;
-  $("statDef").textContent = def;
-  $("statMag").textContent = mag;
-  $("atkBonus").value = state.status.atkBonus;
-  $("defBonus").value = state.status.defBonus;
-  $("magBonus").value = state.status.magBonus;
+  const atk=calcATK(),def=calcDEF(),mag=calcMAG();
+  el('statAtk').textContent=atk;
+  el('statDef').textContent=def;
+  el('statMag').textContent=mag;
+  el('atkBonus').value=state.status.atkBonus||0;
+  el('defBonus').value=state.status.defBonus||0;
+  el('magBonus').value=state.status.magBonus||0;
 
-  const hpBase = state.attrs.FRM * 3 + (state.status.love || 0) * 2;
-  $("hpBase").value = hpBase;
-  $("hpClassBonus").value = state.status.hpClassBonus;
-  $("hpManualBonus").value = state.status.hpManualBonus;
-  const maxHp = hpMax();
-  $("hpMaxLabel").textContent = "/"+maxHp;
-  if(state.status.hpCur>maxHp) state.status.hpCur=maxHp;
+  const hpMax=calcHPMax();
+  if(state.status.hpCur===null||state.status.hpCur===undefined)state.status.hpCur=hpMax;
+  state.status.hpCur=clamp(state.status.hpCur,0,hpMax);
+  el('hpDefBase').value=def;
+  el('hpClassBonus').value=state.status.hpClassBonus||0;
+  el('hpManualBonus').value=state.status.hpManualBonus||0;
+  buildBar('hpBar','hpBarLabel',state.status.hpCur,hpMax);
 
-  buildMeterTrack("hpTrack", state.status.hpCur, maxHp, "hp", (v)=>{ state.status.hpCur=v; renderStatus(); saveState(); });
-  buildMeterTrack("hopeTrack", state.status.hopeCur, state.status.hopeMax, "hope", (v)=>{ state.status.hopeCur=v; renderStatus(); saveState(); });
-  buildLoveTrack();
-  state.status.hopeMax = hopeMaxCalc();
-  if(state.status.hopeCur > state.status.hopeMax){
-    state.status.hopeCur = state.status.hopeMax;
+  const hopeMax=calcHopeMax();
+  if(state.status.hopeCur===null||state.status.hopeCur===undefined)state.status.hopeCur=hopeMax;
+  state.status.hopeCur=clamp(state.status.hopeCur,0,hopeMax);
+  el('hopeMaxNote').textContent='/'+hopeMax;
+  buildBar('hopeBar','hopeBarLabel',state.status.hopeCur,hopeMax);
+
+  const love=clamp(state.status.love||0,0,20);
+  buildBar('loveBar','loveBarLabel',love,20);
+
+  const karma=clamp(state.status.karma||0,-50,50);
+  el('karmaVal').textContent=karma;
+  // bidirectional: center=0, negative=red left, positive=green right
+  const kpct=Math.abs(karma)/50*50; // percentage from center
+  const kfill=el('karmaFill');
+  if(karma>=0){
+    kfill.style.left='50%'; kfill.style.right='auto';
+    kfill.style.width=kpct+'%';
+    kfill.style.background='var(--green)';
+  } else {
+    kfill.style.right='50%'; kfill.style.left='auto';
+    kfill.style.width=kpct+'%';
+    kfill.style.background='var(--red)';
   }
-$("hopeMax").value = state.status.hopeMax;
-  $("karmaVal").textContent = state.status.karma;
-  buildKarmaTrack();
+  el('karmaLabelInside').textContent=karma+' / 50';
 }
 
-function buildMeterTrack(containerId, cur, max, cls, onSet){
-  const el = $(containerId);
-  el.innerHTML="";
-  max = clamp(max,1,60);
-  for(let i=1;i<=max;i++){
-    const p=document.createElement("div");
-    p.className="meter-pip"+(i<=cur?" on "+cls:"");
-    p.addEventListener("click", ()=>onSet(i===cur?i-1:i));
-    el.appendChild(p);
-  }
-}
-function buildLoveTrack(){
-  const el = $("loveTrack");
-  el.innerHTML="";
-  const max=20;
-  for(let i=1;i<=max;i++){
-    const p=document.createElement("div");
-    p.className="meter-pip"+(i<=state.status.love?" on love":"");
-    p.addEventListener("click", ()=>{ state.status.love = (i===state.status.love)?i-1:i; renderStatus(); saveState(); });
-    el.appendChild(p);
-  }
-}
-function buildKarmaTrack(){
-  const el = $("karmaTrack");
-  el.innerHTML="";
-  const k = state.status.karma;
-  for(let i=-10;i<=10;i++){
-    if(i===0) continue;
-    const seg=document.createElement("div");
-    seg.className="karma-seg";
-    let on=false;
-    if(k>=0 && i>0 && i<=k) on=true;
-    if(k<0 && i<0 && i>=k) on=true;
-    seg.style.background = on ? (k>=0?"var(--green)":"var(--red)") : "transparent";
-    el.appendChild(seg);
-  }
+function buildBar(barId,labelId,cur,max){
+  const pct=max>0?clamp(cur/max*100,0,100):0;
+  el(barId).style.width=pct+'%';
+  el(labelId).textContent=cur+' / '+max;
 }
 
-function rollDamage(){
-  const grr = effAttr('GRR');
-  const n = dmgDiceCount(grr);
-  const rolls = Array.from({length:n}, ()=>rollDie(8));
-  const sum = rolls.reduce((a,b)=>a+b,0);
-  const atk = num($("statAtk").textContent);
-  $("diceOut").textContent = `Dano: ${n}d8 [${rolls.join(", ")}] = ${sum} + ATK ${atk} = ${sum+atk}`;
-}
-function rollMagia(){
-  const esp = effAttr('ESP');
-  const n = dmgDiceCount(esp);
-  const rolls = Array.from({length:n}, ()=>rollDie(8));
-  const sum = rolls.reduce((a,b)=>a+b,0);
-  const mag = num($("statMag").textContent);
-  $("diceOut").textContent = `Magia: ${n}d8 [${rolls.join(", ")}] = ${sum} + MAG ${mag} = ${sum+mag}`;
-}
-
-/* ===================== ITENS ===================== */
-function renderItems(){
-  const grid = $("itemsGrid");
-  grid.innerHTML="";
-  for(let i=0;i<10;i++){
-    const slot=document.createElement("div");
-    slot.className="item-slot";
-    slot.innerHTML = `<span class="idx">${i+1}.</span><input type="text" value="${escapeAttr(state.items[i]||"")}" placeholder="item vazio">`;
-    slot.querySelector("input").addEventListener("input", (e)=>{ state.items[i]=e.target.value; saveState(); });
-    grid.appendChild(slot);
-  }
-}
-
-/* ===================== EQUIPADOS ===================== */
-function bindEquip(){
-  const map = [
-    ["eqArmaNome","arma","nome"], ["eqArmaDesc","arma","desc"],
-    ["eqArmaduraNome","armadura","nome"], ["eqArmaduraDesc","armadura","desc"],
-    ["eqAmuletoNome","amuleto","nome"], ["eqAmuletoDesc","amuleto","desc"],
-  ];
-  map.forEach(([id,group,field])=>{
-    $(id).value = state.equip[group][field];
-    $(id).addEventListener("input",(e)=>{ state.equip[group][field]=e.target.value; saveState(); });
+/* click on bar to adjust value */
+function barClickHandler(barWrapId, getCur, getMax, setter){
+  el(barWrapId).addEventListener('click',e=>{
+    const rect=el(barWrapId).getBoundingClientRect();
+    const pct=(e.clientX-rect.left)/rect.width;
+    const max=getMax();
+    setter(Math.round(pct*max));
+    renderStatus();save();
   });
 }
-
-/* ===================== INFO / ALMA ===================== */
-function accentColor(){
-  if(state.info.alma === "Personalizada") return state.info.almaCustomColor || "#cd0b22";
-  return SOUL_COLORS[state.info.alma] || "#cd0b22";
-}
-function textColorFor(hex){
-  // contraste simples: cores claras usam texto preto, escuras usam branco
-  const c = hex.replace('#','');
-  if(c.length!==6) return '#fff';
-  const r=parseInt(c.substr(0,2),16), g=parseInt(c.substr(2,2),16), b=parseInt(c.substr(4,2),16);
-  const lum = (0.299*r+0.587*g+0.114*b);
-  return lum>150 ? '#000' : '#fff';
-}
-function applyAccent(){
-  const c = accentColor();
-  document.documentElement.style.setProperty("--accent", c);
-  document.documentElement.style.setProperty("--accent-soft", c+"33");
-  $("soulSwatch").style.background = c;
-}
-function bindInfo(){
-  $("infoAlma").value = state.info.alma;
-  $("infoClasse").value = state.info.classe;
-  $("infoTrilha").value = state.info.trilha;
-  $("almaCustomColorPicker").value = state.info.almaCustomColor;
-  $("almaCustomColorText").value = state.info.almaCustomColor;
-  toggleCustomAlmaBox();
-
-  $("infoAlma").addEventListener("change",(e)=>{
-    state.info.alma=e.target.value;
-    toggleCustomAlmaBox();
-    applyAccent(); renderAttrs(); renderSkills(); saveState();
-  });
-  $("infoClasse").addEventListener("input",(e)=>{ state.info.classe=e.target.value; saveState(); });
-  $("infoTrilha").addEventListener("input",(e)=>{ state.info.trilha=e.target.value; saveState(); });
-
-  $("almaCustomColorPicker").addEventListener("input",(e)=>{
-    state.info.almaCustomColor = e.target.value;
-    $("almaCustomColorText").value = e.target.value;
-    applyAccent(); renderAttrs(); renderSkills(); saveState();
-  });
-  $("almaCustomColorText").addEventListener("input",(e)=>{
-    let v = e.target.value.trim();
-    if(!v.startsWith('#')) v = '#'+v;
-    if(/^#[0-9a-fA-F]{6}$/.test(v)){
-      state.info.almaCustomColor = v;
-      $("almaCustomColorPicker").value = v;
-      applyAccent(); renderAttrs(); renderSkills();
-    }
-    saveState();
-  });
-}
-function toggleCustomAlmaBox(){
-  $("customAlmaBox").style.display = (state.info.alma==="Personalizada") ? "flex" : "none";
-}
-
-/* ===================== HABILIDADES ===================== */
-function renderAbilities(){
-  const list = $("abilityList");
-  list.innerHTML="";
-  state.abilities.forEach((ab,idx)=>{
-    const box=document.createElement("div");
-    box.className="ability";
-    box.innerHTML = `
-      <button class="remove-ab" title="remover">✕</button>
-      <label class="field-label">Nome</label>
-      <input type="text" value="${escapeAttr(ab.nome||"")}" data-f="nome" style="margin-bottom:4px;">
-      <label class="field-label">Descrição</label>
-      <textarea rows="2" data-f="desc">${escapeHtml(ab.desc||"")}</textarea>
-    `;
-    box.querySelector(".remove-ab").addEventListener("click", ()=>{ state.abilities.splice(idx,1); renderAbilities(); saveState(); });
-    box.querySelector('[data-f="nome"]').addEventListener("input",(e)=>{ ab.nome=e.target.value; saveState(); });
-    box.querySelector('[data-f="desc"]').addEventListener("input",(e)=>{ ab.desc=e.target.value; saveState(); });
-    list.appendChild(box);
-  });
-}
-function addAbility(){
-  state.abilities.push({nome:"",desc:""});
-  renderAbilities(); saveState();
-}
-
-/* ===================== ANOTAÇÕES ===================== */
-function bindNotes(){
-  $("notes1").value = state.notes.note1;
-  $("notes2").value = state.notes.note2;
-  $("notes1").addEventListener("input",(e)=>{ state.notes.note1=e.target.value; saveState(); });
-  $("notes2").addEventListener("input",(e)=>{ state.notes.note2=e.target.value; saveState(); });
-}
-
-/* ===================== NOME / TÍTULO ===================== */
-function bindHeader(){
-  $("charName").value = state.name;
-  $("charTitle").value = state.title;
-  $("charName").addEventListener("input",(e)=>{ state.name=e.target.value; saveState(); });
-  $("charTitle").addEventListener("input",(e)=>{ state.title=e.target.value; saveState(); });
-}
-
-/* ===================== UTIL ===================== */
-function escapeAttr(s){ return String(s).replace(/"/g,"&quot;"); }
-function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function exportSheet(){
-  const data = JSON.stringify(state, null, 2);
-
-  const blob = new Blob([data], {
-    type: "application/json"
-  });
-
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = (state.name || "personagem") + ".json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-function importSheet(file){
-  const reader = new FileReader();
-
-  reader.onload = function(e){
-    try{
-      state = JSON.parse(e.target.result);
-
-      saveState();
-      renderAll();
-
-      alert("Ficha importada com sucesso!");
-    }
-    catch(err){
-      alert("Arquivo inválido.");
-      console.error(err);
-    }
-  };
-
-  reader.readAsText(file);
-}
-
-/* ===================== EVENTOS GLOBAIS ===================== */
-function bindGlobalControls(){
-  $("lvlMinus").addEventListener("click", ()=>setLevel(state.level-1));
-  $("lvlPlus").addEventListener("click", ()=>setLevel(state.level+1));
-
-  $("hpClassBonus").addEventListener("input",(e)=>{ state.status.hpClassBonus = num(e.target.value); renderStatus(); saveState(); });
-  $("hpManualBonus").addEventListener("input",(e)=>{ state.status.hpManualBonus = num(e.target.value); renderStatus(); saveState(); });
-  $("hopeMax").addEventListener("input",(e)=>{ state.status.hopeMax = clamp(num(e.target.value)||1,1,60); if(state.status.hopeCur>state.status.hopeMax) state.status.hopeCur=state.status.hopeMax; renderStatus(); saveState(); });
-
-  $("atkBonus").addEventListener("input",(e)=>{ state.status.atkBonus = num(e.target.value); renderStatus(); saveState(); });
-  $("defBonus").addEventListener("input",(e)=>{ state.status.defBonus = num(e.target.value); renderStatus(); saveState(); });
-  $("magBonus").addEventListener("input",(e)=>{ state.status.magBonus = num(e.target.value); renderStatus(); saveState(); });
-
-  $("karmaMinus").addEventListener("click", ()=>{ state.status.karma = clamp(state.status.karma-1,-10,10); renderStatus(); saveState(); });
-  $("karmaPlus").addEventListener("click", ()=>{ state.status.karma = clamp(state.status.karma+1,-10,10); renderStatus(); saveState(); });
-
-  $("rollDano").addEventListener("click", rollDamage);
-  $("rollMagia").addEventListener("click", rollMagia);
-
-  $("addAbility").addEventListener("click", addAbility);
-
-  $("btnPdf").addEventListener("click", ()=>window.print());
-  $("btnReset").addEventListener("click", ()=>{
-    if(confirm("Isso vai apagar todos os dados salvos desta ficha. Continuar?")){
-      localStorage.removeItem(STORAGE_KEY);
-      state = defaultState();
-      renderAll();
-    }
-  });
-
-  $("btnExport").addEventListener("click", exportSheet);
-
-  $("btnImport").addEventListener("click", ()=>{
-    $("importFile").click();
-  });
-
-  $("importFile").addEventListener("change",(e)=>{
-    if(e.target.files.length){
-      importSheet(e.target.files[0]);
-    }
+barClickHandler('hpBarWrap',()=>state.status.hpCur,calcHPMax,v=>{state.status.hpCur=clamp(v,0,calcHPMax());});
+barClickHandler('hopeBarWrap',()=>state.status.hopeCur,calcHopeMax,v=>{state.status.hopeCur=clamp(v,0,calcHopeMax());});
+barClickHandler('loveBarWrap',()=>state.status.love,()=>20,v=>{state.status.love=clamp(v,0,20);renderStatus();save();});
+el('karmaTrack').addEventListener('click',e=>{
+  const rect=el('karmaTrack').getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  // center = 0, left = -50, right = +50
+  state.status.karma=clamp(Math.round((pct*2-1)*50),-50,50);
+  renderStatus();save();
 });
+
+/* stat bonus inputs */
+['atk','def','mag'].forEach(k=>{
+  el(k+'Bonus').addEventListener('input',e=>{state.status[k+'Bonus']=num(e.target.value);renderStatus();save();});
+});
+el('hpClassBonus').addEventListener('input',e=>{state.status.hpClassBonus=num(e.target.value);renderStatus();save();});
+el('hpManualBonus').addEventListener('input',e=>{state.status.hpManualBonus=num(e.target.value);renderStatus();save();});
+el('karmaMinus').addEventListener('click',()=>{state.status.karma=clamp((state.status.karma||0)-1,-50,50);renderStatus();save();});
+el('karmaPlus').addEventListener('click',()=>{state.status.karma=clamp((state.status.karma||0)+1,-50,50);renderStatus();save();});
+
+/* ---- Dice roller ---- */
+function showResult(html){ el('diceResult').innerHTML=html; }
+function addLog(text){
+  const log=el('diceLog');
+  const line=document.createElement('div');
+  line.textContent=text;
+  log.insertBefore(line,log.firstChild);
+  while(log.children.length>8)log.removeChild(log.lastChild);
+}
+function rollDice(qty,sides,mod,label){
+  const rolls=[];
+  for(let i=0;i<qty;i++)rolls.push(rollDie(sides));
+  const sum=rolls.reduce((a,b)=>a+b,0)+(mod||0);
+  showResult(`${label?'<div>'+label+'</div>':''}<div>[${rolls.join(', ')}]${mod?(mod>0?' +'+mod:' '+mod):''}</div><div class="total">${sum}</div>`);
+  addLog(`${label||(qty+'d'+sides)} → ${sum}`);
+  return sum;
+}
+el('btnRollDano').addEventListener('click',()=>{
+  const qty=Math.max(1,num(el('diceQty').value)||1);
+  const mod=num(el('diceMod').value)||0;
+  const atk=calcATK();
+  const totalDice=qty;
+  rollDice(totalDice,8,atk+mod,`Dano ATK (${totalDice}d8 + ATK ${atk}${mod?'+'+ mod:''})`);
+});
+el('btnRollMag').addEventListener('click',()=>{
+  const qty=Math.max(1,num(el('diceQty').value)||1);
+  const mod=num(el('diceMod').value)||0;
+  const mag=calcMAG();
+  const totalDice=1+qty; // 1 + qty
+  rollDice(totalDice,8,mag+mod,`Dano MAG (${totalDice}d8 + MAG ${mag}${mod?'+'+ mod:''})`);
+});
+
+/* ---- Items ---- */
+function renderItems(){
+    const wrap = el("itemsList");
+    wrap.innerHTML = "";
+
+    for(let i=0;i<10;i++){
+
+        if(typeof state.items[i] === "string"){
+            state.items[i]={
+                nome:state.items[i],
+                desc:""
+            };
+        }
+
+        const item = state.items[i];
+
+        const card=document.createElement("div");
+        card.className="item-card";
+
+        card.innerHTML=`
+            <div class="item-title">
+                <span>${i+1}</span>
+                <input
+                    type="text"
+                    data-item="${i}"
+                    data-field="nome"
+                    placeholder="Nome"
+                    value="${(item.nome||'').replace(/"/g,'&quot;')}"
+                >
+            </div>
+
+            <textarea
+                rows="1"
+                data-item="${i}"
+                data-field="desc"
+                placeholder="Descrição"
+            >${item.desc||""}</textarea>
+        `;
+
+        wrap.appendChild(card);
+    }
+
+    wrap.querySelectorAll("[data-item]").forEach(inp=>{
+        inp.addEventListener("input",e=>{
+            const i=Number(e.target.dataset.item);
+            const f=e.target.dataset.field;
+            state.items[i][f]=e.target.value;
+            save();
+        });
+    });
 }
 
-/* ===================== RENDER TUDO ===================== */
+/* ---- Equip ---- */
+function bindEquip(){
+  [['eqArmaNome','arma','nome'],['eqArmaDesc','arma','desc'],
+   ['eqArmaduraNome','armadura','nome'],['eqArmaduraDesc','armadura','desc'],
+   ['eqAmuletoNome','amuleto','nome'],['eqAmuletoDesc','amuleto','desc']].forEach(([id,g,f])=>{
+    el(id).value=state.equip[g][f];
+    el(id).addEventListener('input',e=>{state.equip[g][f]=e.target.value;save();});
+  });
+}
+
+/* ---- Info / Alma ---- */
+function bindInfo(){
+  el('infoAlma').value=state.info.alma;
+  el('almaColorPicker').value=state.info.almaCustomColor;
+  el('almaColorText').value=state.info.almaCustomColor;
+  el('infoClasse').value=state.classe.nome||'';
+  el('infoTrilha').value=state.classe.trilha||'';
+  toggleCustomAlma();
+
+  el('infoAlma').addEventListener('change',e=>{
+    state.info.alma=e.target.value;
+    toggleCustomAlma();applyTheme();renderAttrs();renderSkills();renderStatus();save();
+  });
+  el('almaColorPicker').addEventListener('input',e=>{
+    state.info.almaCustomColor=e.target.value;el('almaColorText').value=e.target.value;
+    applyTheme();renderAttrs();renderSkills();save();
+  });
+  el('almaColorText').addEventListener('input',e=>{
+    let v=e.target.value.trim();if(!v.startsWith('#'))v='#'+v;
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){
+      state.info.almaCustomColor=v;el('almaColorPicker').value=v;
+      applyTheme();renderAttrs();renderSkills();
+    }save();
+  });
+  el('infoClasse').addEventListener('input',e=>{state.classe.nome=e.target.value;save();});
+  el('infoTrilha').addEventListener('input',e=>{state.classe.trilha=e.target.value;save();});
+}
+function toggleCustomAlma(){
+  el('customAlmaBox').style.display=state.info.alma==='Personalizada'?'flex':'none';
+}
+
+/* ---- Class selects ---- */
+function renderClassSelects(){
+  [el('classAtrUp'),el('classAtrDown')].forEach(sel=>{
+    sel.innerHTML =
+      '<option value="">— nenhum —</option>' +
+      ATTRS.map(a => `<option value="${a.key}">${a.key}</option>`).join('');
+  });
+  el('classPericiaBonus').innerHTML='<option value="">— nenhuma —</option>'+ALL_SKILLS.map(s=>`<option value="${s}">${s}</option>`).join('');
+  el('classAtrUp').value=state.classe.atrUp||'';
+  el('classAtrDown').value=state.classe.atrDown||'';
+  el('classPericiaBonus').value=state.classe.periciaBonus||'';
+  el('classAtrUp').addEventListener('change',e=>{state.classe.atrUp=e.target.value;renderAttrs();renderStatus();save();});
+  el('classAtrDown').addEventListener('change',e=>{state.classe.atrDown=e.target.value;renderAttrs();renderStatus();save();});
+  el('classPericiaBonus').addEventListener('change',e=>{state.classe.periciaBonus=e.target.value;renderSkills();save();});
+}
+
+/* ---- Habilidades ---- */
+function renderHabilidades(){
+  const wrap=el('habilidadesList'); wrap.innerHTML='';
+  state.habilidades.forEach((h,idx)=>{
+    const card=document.createElement('div');card.className='hab-card';
+    card.innerHTML=`
+      <button class="remove no-print" data-rm="${idx}">×</button>
+      <div class="hab-grid">
+        <div><label class="f">Nome</label><input type="text" data-h="${idx}" data-f="nome" value="${(h.nome||'').replace(/"/g,'&quot;')}"></div>
+        <div><label class="f">Custo</label><input type="text" data-h="${idx}" data-f="custo" value="${(h.custo||'').replace(/"/g,'&quot;')}"></div>
+        <div><label class="f">Elemento</label><input type="text" data-h="${idx}" data-f="elemento" value="${(h.elemento||'').replace(/"/g,'&quot;')}"></div>
+      </div>
+      <label class="f">Descrição</label>
+      <textarea data-h="${idx}" data-f="descricao" style="min-height:44px;">${h.descricao||''}</textarea>
+    `;
+    wrap.appendChild(card);
+  });
+  wrap.querySelectorAll('[data-h]').forEach(inp=>{
+    inp.addEventListener('input',e=>{const i=num(e.target.dataset.h);state.habilidades[i][e.target.dataset.f]=e.target.value;save();});
+  });
+  wrap.querySelectorAll('[data-rm]').forEach(btn=>{
+    btn.addEventListener('click',e=>{state.habilidades.splice(num(e.target.dataset.rm),1);renderHabilidades();save();});
+  });
+}
+el('btnAddHab').addEventListener('click',()=>{state.habilidades.push({nome:'',custo:'',elemento:'',descricao:''});renderHabilidades();save();});
+
+/* ---- Notes ---- */
+function bindNotes(){
+  el('notes1').value=state.notes.n1||'';
+  el('notes2').value=state.notes.n2||'';
+  el('notes1').addEventListener('input',e=>{state.notes.n1=e.target.value;save();});
+  el('notes2').addEventListener('input',e=>{state.notes.n2=e.target.value;save();});
+}
+
+/* ---- Global controls ---- */
+el('btnPrint').addEventListener('click',()=>window.print());
+el('btnReset').addEventListener('click',()=>{
+  if(confirm('Isso vai apagar todos os dados. Continuar?')){
+    state=defaultState();renderAll();save();
+  }
+});
+el('btnExport').addEventListener('click',()=>{
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));
+  a.download=(state.name||'personagem')+'.json';a.click();
+});
+el('btnImport').addEventListener('click',()=>el('importFile').click());
+el('importFile').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{state=JSON.parse(r.result);save();renderAll();alert('Ficha importada!');}catch(err){alert('Arquivo inválido.');}};
+  r.readAsText(f);
+});
+
+/* ---- Render All ---- */
 function renderAll(){
-  applyAccent();
+  applyTheme();
   bindHeader();
-  renderPhoto();
+  syncPhotos();
   renderLevel();
   renderAttrs();
   renderSkills();
@@ -1274,17 +1265,14 @@ function renderAll(){
   renderItems();
   bindEquip();
   bindInfo();
-  renderAbilities();
+  renderClassSelects();
+  renderHabilidades();
   bindNotes();
   goToPage(state.page||1);
 }
 
-buildPager();
-bindPhoto();
-bindGlobalControls();
 renderAll();
-
-})();
+save();
 </script>
 </body>
 </html>
