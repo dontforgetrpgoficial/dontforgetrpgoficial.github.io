@@ -337,6 +337,9 @@ footer.credit{font-size:11px; color:var(--ink-dim); text-align:center; margin-to
   <h1>DON'T FORGET — Ficha</h1>
   <div class="btns">
     <button class="ui-btn" id="btnPdf">🖨️ Exportar PDF</button>
+    <button class="ui-btn" id="btnExport">💾 Exportar</button>
+    <button class="ui-btn" id="btnImport">📂 Importar</button>
+    <input type="file" id="importFile" accept=".json" style="display:none;">
     <button class="ui-btn danger" id="btnReset">♻️ Resetar ficha</button>
   </div>
 </div>
@@ -1101,6 +1104,42 @@ function bindHeader(){
 /* ===================== UTIL ===================== */
 function escapeAttr(s){ return String(s).replace(/"/g,"&quot;"); }
 function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function exportSheet(){
+  const data = JSON.stringify(state, null, 2);
+
+  const blob = new Blob([data], {
+    type: "application/json"
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = (state.name || "personagem") + ".json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+function importSheet(file){
+  const reader = new FileReader();
+
+  reader.onload = function(e){
+    try{
+      state = JSON.parse(e.target.result);
+
+      saveState();
+      renderAll();
+
+      alert("Ficha importada com sucesso!");
+    }
+    catch(err){
+      alert("Arquivo inválido.");
+      console.error(err);
+    }
+  };
+
+  reader.readAsText(file);
+}
 
 /* ===================== EVENTOS GLOBAIS ===================== */
 function bindGlobalControls(){
@@ -1131,6 +1170,18 @@ function bindGlobalControls(){
       renderAll();
     }
   });
+
+  $("btnExport").addEventListener("click", exportSheet);
+
+  $("btnImport").addEventListener("click", ()=>{
+    $("importFile").click();
+  });
+
+  $("importFile").addEventListener("change",(e)=>{
+    if(e.target.files.length){
+      importSheet(e.target.files[0]);
+    }
+});
 }
 
 /* ===================== RENDER TUDO ===================== */
