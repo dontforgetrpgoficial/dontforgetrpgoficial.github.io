@@ -24,7 +24,7 @@
   --font-b:'PixelOp','VT323','Press Start 2P',monospace;
 }
 
-*{box-sizing:border-box; print-color-adjust:exact; -webkit-print-color-adjust:exact; color-adjust:exact;}
+*{box-sizing:border-box; print-color-adjust:exact; -webkit-print-color-adjust:exact;}
 
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:15px;-webkit-font-smoothing:none;}
 
@@ -251,6 +251,16 @@ select option{background:#1a1230;color:#fff;}
 .hp-bonus-row>div{flex:1;}
 .hp-bonus-row label{font-size:10px;color:var(--text-dim);display:block;margin-bottom:2px;}
 
+/* ---- Meter +/- buttons ---- */
+.meter-btn{
+  width:22px;height:22px;border:1px solid var(--border-dim);background:#0a0a16;
+  color:var(--text);cursor:pointer;font-family:var(--font-b);font-size:14px;
+  line-height:1;flex:0 0 22px;padding:0;
+}
+.meter-btn:hover{border-color:var(--soul);color:#fff;}
+.meter-btn-full{font-size:11px;border-color:var(--red);color:var(--red);}
+.meter-btn-full:hover{background:var(--red);color:#fff;}
+
 /* ---- Karma bar ---- */
 .karma-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .karma-track{flex:1;height:16px;background:#0a0a16;border:1px solid var(--border-dim);border-radius:2px;overflow:hidden;cursor:pointer;position:relative;}
@@ -313,6 +323,12 @@ select option{background:#1a1230;color:#fff;}
     padding:2px 3px;
     resize:none;
 }
+.item-rm-btn{
+    margin-left:auto;background:transparent;border:1px solid var(--red);
+    color:var(--red);width:14px;height:14px;cursor:pointer;font-size:9px;
+    line-height:1;padding:0;flex:0 0 14px;
+}
+.item-rm-btn:hover{background:var(--red);color:#fff;}
 
 /* ---- Equip ---- */
 .equip-box{border:1px dashed var(--border-dim);border-radius:4px;padding:7px;margin-bottom:7px;}
@@ -321,7 +337,10 @@ select option{background:#1a1230;color:#fff;}
 
 
 /* ---- Abilities ---- */
-.hab-card{border:1px solid var(--border-dim);padding:10px;margin-bottom:9px;background:#0a0a16;position:relative;}
+.hab-card{border:1px solid var(--border-dim);padding:10px;margin-bottom:9px;background:#0a0a16;position:relative;cursor:grab;}
+.hab-card.dragging{opacity:.4;cursor:grabbing;}
+.hab-card.drag-over{border-color:var(--soul);box-shadow:0 0 0 1px var(--soul);}
+.hab-drag-handle{position:absolute;top:4px;left:4px;color:var(--border-dim);font-size:12px;cursor:grab;user-select:none;padding:2px;}
 .hab-card .remove{position:absolute;top:4px;right:4px;background:transparent;border:1px solid var(--red);color:var(--red);width:20px;height:20px;cursor:pointer;font-size:11px;line-height:1;}
 .hab-grid{display:grid;grid-template-columns:1.4fr .8fr .8fr;gap:8px;margin-bottom:6px;}
 
@@ -477,6 +496,10 @@ select option{background:#1a1230;color:#fff;}
         <div class="equip-box">
           <div class="eq-title">ARMA</div>
           <input type="text" id="eqArmaNome" placeholder="Nome da arma" style="margin-bottom:3px;">
+          <div style="display:flex;gap:4px;margin-bottom:3px;">
+            <div style="flex:1;"><label class="f" style="font-size:9px;">Categoria</label><input type="text" id="eqArmaCategoria" placeholder="ex: Espada"></div>
+            <div style="flex:1;"><label class="f" style="font-size:9px;">Tipo</label><input type="text" id="eqArmaTipo" placeholder="ex: Cortante"></div>
+          </div>
           <textarea id="eqArmaDesc" rows="2" placeholder="Descrição / efeito"></textarea>
         </div>
         <div class="equip-box">
@@ -519,10 +542,13 @@ select option{background:#1a1230;color:#fff;}
         <!-- HP barra -->
         <div class="meter-row">
           <span class="meter-label">HP</span>
+          <button class="meter-btn no-print" id="hpMinus">−</button>
           <div class="meter-bar-wrap" id="hpBarWrap" title="Clique para ajustar HP">
             <div class="meter-bar hp" id="hpBar" style="width:100%;"></div>
             <span class="meter-bar-label" id="hpBarLabel">20 / 20</span>
           </div>
+          <button class="meter-btn no-print" id="hpPlus">+</button>
+          <button class="meter-btn meter-btn-full no-print" id="hpFull" title="Recuperar HP total">♥</button>
         </div>
         <div class="hp-bonus-row">
           <div><label>Bônus Classe</label><input type="number" id="hpClassBonus" value="0"></div>
@@ -533,20 +559,27 @@ select option{background:#1a1230;color:#fff;}
         <!-- HOPE barra -->
         <div class="meter-row">
           <span class="meter-label">HOPE</span>
+          <button class="meter-btn no-print" id="hopeMinus">−</button>
           <div class="meter-bar-wrap" id="hopeBarWrap" title="Clique para ajustar HOPE">
             <div class="meter-bar hope" id="hopeBar" style="width:100%;"></div>
             <span class="meter-bar-label" id="hopeBarLabel">10 / 10</span>
           </div>
+          <button class="meter-btn no-print" id="hopePlus">+</button>
           <span class="meter-max-note" id="hopeMaxNote">/10</span>
+        </div>
+        <div class="hp-bonus-row" style="margin-top:-4px;">
+          <div><label>Bônus Manual HOPE</label><input type="number" id="hopeManualBonus" value="0"></div>
         </div>
 
         <!-- LOVE barra -->
         <div class="meter-row">
           <span class="meter-label">LOVE</span>
+          <button class="meter-btn no-print" id="loveMinus">−</button>
           <div class="meter-bar-wrap" id="loveBarWrap" title="Clique para ajustar LOVE (máx 20)">
             <div class="meter-bar love" id="loveBar" style="width:0%;"></div>
             <span class="meter-bar-label" id="loveBarLabel">0 / 20</span>
           </div>
+          <button class="meter-btn no-print" id="lovePlus">+</button>
         </div>
 
         <!-- KARMA barra (limite 50) -->
@@ -584,6 +617,9 @@ select option{background:#1a1230;color:#fff;}
         </div>
 
         <div id="itemsList" class="items-list"></div>
+        <div class="add-row no-print" style="margin-top:6px;">
+          <button class="btn primary" id="btnAddItem" style="font-size:11px;padding:4px 8px;">+ Slot de Item</button>
+        </div>
       </div>
     </div>
 
@@ -617,10 +653,15 @@ select option{background:#1a1230;color:#fff;}
             <option value="Perseverança">Perseverança (Roxo)</option>
             <option value="Bondade">Bondade (Verde)</option>
             <option value="Integridade">Integridade (Azul)</option>
+            <option value="Paciência">Paciência (Ciano)</option>
             <option value="Monstro">Monstro (Branco)</option>
-            <option value="Darkner">Darkner (Preto/Roxo)</option>
+            <option value="Darkner">Darkner (Roxo Escuro)</option>
             <option value="Personalizada">Personalizada...</option>
           </select>
+        </div>
+        <div id="elementoAlmaBox" style="display:none;margin-bottom:6px;">
+          <label class="f">Elemento</label>
+          <input type="text" id="infoElementoAlma" placeholder="ex: Fogo, Gelo, Sombra...">
         </div>
         <div id="customAlmaBox">
           <label class="f" style="margin:0;">Cor personalizada:</label>
@@ -714,7 +755,7 @@ const ALL_SKILLS = Object.values(SKILL_MAP).flat();
 const SOUL_COLORS = {
   'Determinação':'#cd0b22','Bravura':'#fd7b1e','Justiça':'#ffb422',
   'Perseverança':'#a348a3','Bondade':'#23b04b','Integridade':'#236bf2',
-  'Monstro':'#ffffff','Darkner':'#1a0a2e','Personalizada':'#ff66ff',
+  'Monstro':'#ffffff','Darkner':'#412576','Paciência':'#00daef','Personalizada':'#ff66ff',
 };
 const SOUL_FONT_COLOR = {
   'Monstro':'#000000','Darkner':'#ffffff',
@@ -737,12 +778,12 @@ function defaultState(){
   return {
     name:'',title:'',level:1,image:null,page:1,
     attrs,attrBonus,skills,skillBonus,
-    equip:{arma:{nome:'',desc:''},armadura:{nome:'',desc:''},amuleto:{nome:'',desc:''}},
+    equip:{arma:{nome:'',desc:'',categoria:'',tipo:''},armadura:{nome:'',desc:''},amuleto:{nome:'',desc:''}},
     items: Array.from ({length:10}, () => ({
     nome: '',
     desc: ''
     })),
-    status:{hpCur:null,hpClassBonus:0,hpManualBonus:0,hopeCur:null,love:0,karma:0,atkBonus:0,defBonus:0,magBonus:0},
+    status:{hpCur:null,hpClassBonus:0,hpManualBonus:0,hopeCur:null,hopeManualBonus:0,love:0,karma:0,atkBonus:0,defBonus:0,magBonus:0},
     info:{alma:'Determinação',almaCustomColor:'#ff66ff'},
     classe:{nome:'',trilha:'',atrUp:'',atrDown:'',periciaBonus:''},
     habilidades:[],
@@ -751,19 +792,11 @@ function defaultState(){
 }
 
 let state = defaultState();
-try{const r=LS.get(STORAGE_KEY);if(r){const p=JSON.parse(r);state=Object.assign(defaultState(),p,{attrs:Object.assign(defaultState().attrs,p.attrs||{}),attrBonus:Object.assign(defaultState().attrBonus,p.attrBonus||{}),skills:Object.assign(defaultState().skills,p.skills||{}),skillBonus:Object.assign(defaultState().skillBonus,p.skillBonus||{}),equip:Object.assign(defaultState().equip,p.equip||{}),status:Object.assign(defaultState().status,p.status||{}),info:Object.assign(defaultState().info,p.info||{}),classe:Object.assign(defaultState().classe,p.classe||{}),notes:Object.assign(defaultState().notes,p.notes||{}), items:
-    p.items && p.items.length===10
+try{const r=LS.get(STORAGE_KEY);if(r){const p=JSON.parse(r);state=Object.assign(defaultState(),p,{attrs:Object.assign(defaultState().attrs,p.attrs||{}),attrBonus:Object.assign(defaultState().attrBonus,p.attrBonus||{}),skills:Object.assign(defaultState().skills,p.skills||{}),skillBonus:Object.assign(defaultState().skillBonus,p.skillBonus||{}),equip:Object.assign({arma:{nome:'',desc:'',categoria:'',tipo:''},armadura:{nome:'',desc:''},amuleto:{nome:'',desc:''}},p.equip||{},{arma:Object.assign({nome:'',desc:'',categoria:'',tipo:''},p.equip&&p.equip.arma||{})}),status:Object.assign(defaultState().status,p.status||{}),info:Object.assign(defaultState().info,p.info||{}),classe:Object.assign(defaultState().classe,p.classe||{}),notes:Object.assign(defaultState().notes,p.notes||{}), items:
+    p.items && p.items.length>0
         ? p.items.map(item=>{
-            if(typeof item==="string"){
-                return {
-                    nome:item,
-                    desc:""
-                };
-            }
-            return {
-                nome:item.nome||"",
-                desc:item.desc||""
-            };
+            if(typeof item==="string"){return {nome:item,desc:""};}
+            return {nome:item.nome||"",desc:item.desc||""};
         })
         : defaultState().items,habilidades:p.habilidades||[]});}}catch(e){}
 
@@ -787,10 +820,11 @@ function accentColor(){if(state.info.alma==='Personalizada')return state.info.al
 function textColorFor(hex){const c=hex.replace('#','');if(c.length!==6)return'#fff';const r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return(0.299*r+0.587*g+0.114*b)>150?'#000':'#fff';}
 
 function calcATK(){ return effAttr('GRR')*5+(state.status.atkBonus||0)+(state.status.love||0)*2; }
-function calcDEF(){ return effAttr('FRM')*3+(state.status.defBonus||0)+(state.status.love||0)*2; }
+function calcDEFbase(){ return effAttr('FRM')*3+(state.status.love||0)*2; }
+function calcDEF(){ return calcDEFbase()+(state.status.defBonus||0); }
 function calcMAG(){ return effAttr('ESP')*5+(state.status.magBonus||0); }
-function calcHPMax(){ return Math.max(1,calcDEF()+(state.status.hpClassBonus||0)+(state.status.hpManualBonus||0)+Math.max(0, (state.level || 1) - 1) * 20); }
-function calcHopeMax(){ return 5+effAttr('MRL')*2; }
+function calcHPMax(){ return Math.max(1,calcDEFbase()+(state.status.hpClassBonus||0)+(state.status.hpManualBonus||0)+Math.max(0, (state.level || 1) - 1) * 20 ); }
+function calcHopeMax(){ return 5+effAttr('MRL')*2+(state.status.hopeManualBonus||0); }
 
 /* ---- Apply soul theme ---- */
 function applyTheme(){
@@ -991,7 +1025,7 @@ function renderStatus(){
   const hpMax=calcHPMax();
   if(state.status.hpCur===null||state.status.hpCur===undefined)state.status.hpCur=hpMax;
   state.status.hpCur=clamp(state.status.hpCur,0,hpMax);
-  el('hpDefBase').value=def;
+  el('hpDefBase').value=calcDEFbase();
   el('hpClassBonus').value=state.status.hpClassBonus||0;
   el('hpManualBonus').value=state.status.hpManualBonus||0;
   buildBar('hpBar','hpBarLabel',state.status.hpCur,hpMax);
@@ -1000,6 +1034,7 @@ function renderStatus(){
   if(state.status.hopeCur===null||state.status.hopeCur===undefined)state.status.hopeCur=hopeMax;
   state.status.hopeCur=clamp(state.status.hopeCur,0,hopeMax);
   el('hopeMaxNote').textContent='/'+hopeMax;
+  el('hopeManualBonus').value=state.status.hopeManualBonus||0;
   buildBar('hopeBar','hopeBarLabel',state.status.hopeCur,hopeMax);
 
   const love=clamp(state.status.love||0,0,20);
@@ -1058,6 +1093,16 @@ el('hpManualBonus').addEventListener('input',e=>{state.status.hpManualBonus=num(
 el('karmaMinus').addEventListener('click',()=>{state.status.karma=clamp((state.status.karma||0)-1,-50,50);renderStatus();save();});
 el('karmaPlus').addEventListener('click',()=>{state.status.karma=clamp((state.status.karma||0)+1,-50,50);renderStatus();save();});
 
+/* HP / HOPE / LOVE steppers */
+el('hpMinus').addEventListener('click',()=>{state.status.hpCur=clamp((state.status.hpCur||0)-1,0,calcHPMax());renderStatus();save();});
+el('hpPlus').addEventListener('click',()=>{state.status.hpCur=clamp((state.status.hpCur||0)+1,0,calcHPMax());renderStatus();save();});
+el('hpFull').addEventListener('click',()=>{state.status.hpCur=calcHPMax();renderStatus();save();});
+el('hopeMinus').addEventListener('click',()=>{state.status.hopeCur=clamp((state.status.hopeCur||0)-1,0,calcHopeMax());renderStatus();save();});
+el('hopePlus').addEventListener('click',()=>{state.status.hopeCur=clamp((state.status.hopeCur||0)+1,0,calcHopeMax());renderStatus();save();});
+el('loveMinus').addEventListener('click',()=>{state.status.love=clamp((state.status.love||0)-1,0,20);renderStatus();save();});
+el('lovePlus').addEventListener('click',()=>{state.status.love=clamp((state.status.love||0)+1,0,20);renderStatus();save();});
+el('hopeManualBonus').addEventListener('input',e=>{state.status.hopeManualBonus=num(e.target.value);renderStatus();save();});
+
 /* ---- Dice roller ---- */
 function showResult(html){ el('diceResult').innerHTML=html; }
 function addLog(text){
@@ -1086,7 +1131,7 @@ el('btnRollMag').addEventListener('click',()=>{
   const qty=Math.max(1,num(el('diceQty').value)||1);
   const mod=num(el('diceMod').value)||0;
   const mag=calcMAG();
-  const totalDice=1+qty; // 1 + qty
+  const totalDice=qty; // 1 + qty
   rollDice(totalDice,8,mag+mod,`Dano MAG (${totalDice}d8 + MAG ${mag}${mod?'+'+ mod:''})`);
 });
 
@@ -1095,7 +1140,8 @@ function renderItems(){
     const wrap = el("itemsList");
     wrap.innerHTML = "";
 
-    for(let i=0;i<10;i++){
+    const count = state.items.length;
+    for(let i=0;i<count;i++){
 
         if(typeof state.items[i] === "string"){
             state.items[i]={
@@ -1119,6 +1165,7 @@ function renderItems(){
                     placeholder="Nome"
                     value="${(item.nome||'').replace(/"/g,'&quot;')}"
                 >
+                <button class="item-rm-btn no-print" data-rm="${i}" title="Remover slot">×</button>
             </div>
 
             <textarea
@@ -1140,14 +1187,23 @@ function renderItems(){
             save();
         });
     });
+    wrap.querySelectorAll("[data-rm]").forEach(btn=>{
+        btn.addEventListener("click",e=>{
+            const i=Number(e.target.dataset.rm);
+            state.items.splice(i,1);
+            renderItems();save();
+        });
+    });
 }
+el('btnAddItem').addEventListener('click',()=>{state.items.push({nome:'',desc:''});renderItems();save();});
 
 /* ---- Equip ---- */
 function bindEquip(){
   [['eqArmaNome','arma','nome'],['eqArmaDesc','arma','desc'],
+   ['eqArmaCategoria','arma','categoria'],['eqArmaTipo','arma','tipo'],
    ['eqArmaduraNome','armadura','nome'],['eqArmaduraDesc','armadura','desc'],
    ['eqAmuletoNome','amuleto','nome'],['eqAmuletoDesc','amuleto','desc']].forEach(([id,g,f])=>{
-    el(id).value=state.equip[g][f];
+    el(id).value=state.equip[g][f]||'';
     el(id).addEventListener('input',e=>{state.equip[g][f]=e.target.value;save();});
   });
 }
@@ -1159,6 +1215,7 @@ function bindInfo(){
   el('almaColorText').value=state.info.almaCustomColor;
   el('infoClasse').value=state.classe.nome||'';
   el('infoTrilha').value=state.classe.trilha||'';
+  el('infoElementoAlma').value=state.info.elementoAlma||'';
   toggleCustomAlma();
 
   el('infoAlma').addEventListener('change',e=>{
@@ -1178,9 +1235,12 @@ function bindInfo(){
   });
   el('infoClasse').addEventListener('input',e=>{state.classe.nome=e.target.value;save();});
   el('infoTrilha').addEventListener('input',e=>{state.classe.trilha=e.target.value;save();});
+  el('infoElementoAlma').addEventListener('input',e=>{state.info.elementoAlma=e.target.value;save();});
 }
 function toggleCustomAlma(){
   el('customAlmaBox').style.display=state.info.alma==='Personalizada'?'flex':'none';
+  const showElem=['Monstro','Darkner'].includes(state.info.alma);
+  el('elementoAlmaBox').style.display=showElem?'block':'none';
 }
 
 /* ---- Class selects ---- */
@@ -1200,20 +1260,37 @@ function renderClassSelects(){
 }
 
 /* ---- Habilidades ---- */
+let habDragIdx=null;
 function renderHabilidades(){
   const wrap=el('habilidadesList'); wrap.innerHTML='';
   state.habilidades.forEach((h,idx)=>{
     const card=document.createElement('div');card.className='hab-card';
+    card.setAttribute('draggable','true');
+    card.dataset.idx=idx;
     card.innerHTML=`
+      <span class="hab-drag-handle no-print" title="Arrastar para reordenar">⠿</span>
       <button class="remove no-print" data-rm="${idx}">×</button>
-      <div class="hab-grid">
+      <div class="hab-grid" style="margin-left:18px;">
         <div><label class="f">Nome</label><input type="text" data-h="${idx}" data-f="nome" value="${(h.nome||'').replace(/"/g,'&quot;')}"></div>
         <div><label class="f">Custo</label><input type="text" data-h="${idx}" data-f="custo" value="${(h.custo||'').replace(/"/g,'&quot;')}"></div>
         <div><label class="f">Elemento</label><input type="text" data-h="${idx}" data-f="elemento" value="${(h.elemento||'').replace(/"/g,'&quot;')}"></div>
       </div>
-      <label class="f">Descrição</label>
-      <textarea data-h="${idx}" data-f="descricao" style="min-height:44px;">${h.descricao||''}</textarea>
+      <label class="f" style="margin-left:18px;">Descrição</label>
+      <textarea data-h="${idx}" data-f="descricao" style="min-height:44px;margin-left:18px;width:calc(100% - 18px);">${h.descricao||''}</textarea>
     `;
+    // drag events
+    card.addEventListener('dragstart',e=>{habDragIdx=idx;setTimeout(()=>card.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
+    card.addEventListener('dragend',()=>{card.classList.remove('dragging');document.querySelectorAll('.hab-card').forEach(c=>c.classList.remove('drag-over'));});
+    card.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';card.classList.add('drag-over');});
+    card.addEventListener('dragleave',()=>card.classList.remove('drag-over'));
+    card.addEventListener('drop',e=>{
+      e.preventDefault();card.classList.remove('drag-over');
+      const toIdx=idx;
+      if(habDragIdx===null||habDragIdx===toIdx)return;
+      const moved=state.habilidades.splice(habDragIdx,1)[0];
+      state.habilidades.splice(toIdx,0,moved);
+      habDragIdx=null;renderHabilidades();save();
+    });
     wrap.appendChild(card);
   });
   wrap.querySelectorAll('[data-h]').forEach(inp=>{
